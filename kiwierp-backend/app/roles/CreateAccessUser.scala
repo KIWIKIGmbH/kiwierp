@@ -19,7 +19,7 @@ trait CreateAccessUser {
     }
   }
 
-  def checkUserNotExist(name: String): Future[Unit] = User.findByName(name) map { optUser =>
+  def checkUserNotExist(name: String)(implicit s: AsyncDBSession): Future[Unit] = User.findByName(name) map { optUser =>
     if (optUser.isDefined) throw new InvalidRequest else ()
   }
 
