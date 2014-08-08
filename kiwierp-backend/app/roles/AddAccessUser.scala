@@ -8,7 +8,7 @@ import utils.exceptions.InvalidRequest
 
 import scala.concurrent.Future
 
-trait CreateAccessUser {
+trait AddAccessUser {
 
   this: User =>
 

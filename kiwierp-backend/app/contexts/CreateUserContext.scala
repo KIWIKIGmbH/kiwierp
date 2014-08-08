@@ -2,7 +2,7 @@ package contexts
 
 import models.User
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import roles.CreateAccessUser
+import roles.AddAccessUser
 import scalikejdbc.async.{AsyncDB, AsyncDBSession}
 import utils.Password
 
@@ -11,12 +11,12 @@ import scala.concurrent.Future
 class CreateUserContext (name: String, password: Password, userType: String, user: User)(implicit s: AsyncDBSession) {
 
   private def create(): Future[User] = {
-    val createAccessUser = new User(user) with CreateAccessUser
+    val addAccessUser = new User(user) with AddAccessUser
 
-    createAccessUser.checkUserType(userType)
+    addAccessUser.checkUserType(userType)
 
-    createAccessUser.checkUserNotExist(name) flatMap { _ =>
-      createAccessUser.create(name, password, userType)
+    addAccessUser.checkUserNotExist(name) flatMap { _ =>
+      addAccessUser.create(name, password, userType)
     }
   }
 
