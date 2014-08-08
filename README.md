@@ -27,6 +27,9 @@ The kiwierp is an open source ERP system, especially for "hardware companies". T
 * Fix some bugs
 * Error handlings
 * Test codes for the frontend and the backend.
+* Dashboard
+* Custum value fields
+* The feature of inventory consumption
 * The feature of reporting.
 
 ### License

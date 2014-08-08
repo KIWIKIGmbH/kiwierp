@@ -13,7 +13,7 @@ class DeleteInventoryContext private (inventory: Inventory, deletedAt: DateTime 
   private def delete(): Future[Int] = {
     val deletedInventory = new Inventory(inventory) with DeletedInventory
 
-    deletedInventory.deleteInventoryFieldValues(deletedAt) flatMap (_ => deletedInventory.deleted(deletedAt))
+    deletedInventory.deleted(deletedAt)
   }
 
 }

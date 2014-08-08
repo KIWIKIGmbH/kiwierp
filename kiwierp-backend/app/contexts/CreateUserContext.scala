@@ -3,7 +3,7 @@ package contexts
 import models.User
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import roles.CreateAccessUser
-import scalikejdbc.async.{AsyncDBSession, AsyncDB}
+import scalikejdbc.async.{AsyncDB, AsyncDBSession}
 import utils.Password
 
 import scala.concurrent.Future

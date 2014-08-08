@@ -85,18 +85,6 @@ CREATE TABLE suppliers (
   deleted_at timestamp with time zone
 );
 
-CREATE TABLE inventory_consumption (
-  id serial PRIMARY KEY,
-  product_id integer NOT NULL,
-  consumed integer NOT NULL,
-  created_at timestamp with time zone NOT NULL,
-  updated_at timestamp with time zone NOT NULL,
-  deleted_at timestamp with time zone,
-  FOREIGN KEY (product_id)
-  REFERENCES products (id) MATCH SIMPLE
-  ON UPDATE NO ACTION ON DELETE NO ACTION
-);
-
 CREATE TYPE inventory_order_status AS ENUM ('ordered', 'shipped', 'delivered');
 
 CREATE TABLE inventory_orders (
@@ -116,40 +104,5 @@ CREATE TABLE inventory_orders (
     ON UPDATE NO ACTION ON DELETE NO ACTION,
   FOREIGN KEY (supplier_id)
     REFERENCES suppliers (id) MATCH SIMPLE
-    ON UPDATE NO ACTION ON DELETE NO ACTION
-);
-
-CREATE TYPE field_type AS ENUM ('integer', 'decimal', 'string', 'timestamp', 'boolean');
-
-CREATE TABLE inventory_fields (
-  id serial PRIMARY KEY,
-  product_id integer NOT NULL,
-  name character varying (128) NOT NULL,
-  field_type field_type NOT NULL,
-  is_required boolean NOT NULL,
-  min integer,
-  max integer,
-  created_at timestamp with time zone NOT NULL,
-  updated_at timestamp with time zone NOT NULL,
-  deleted_at timestamp with time zone,
-  UNIQUE (product_id, name),
-  FOREIGN KEY (product_id)
-    REFERENCES products (id) MATCH SIMPLE
-    ON UPDATE NO ACTION ON DELETE NO ACTION
-);
-
-CREATE TABLE inventory_field_values (
-  inventory_id integer NOT NULL,
-  inventory_field_id integer NOT NULL,
-  value character varying (512) NOT NULL,
-  created_at timestamp with time zone NOT NULL,
-  updated_at timestamp with time zone NOT NULL,
-  deleted_at timestamp with time zone,
-  PRIMARY KEY (inventory_id, inventory_field_id),
-  FOREIGN KEY (inventory_id)
-    REFERENCES inventories (id) MATCH SIMPLE
-    ON UPDATE NO ACTION ON DELETE NO ACTION,
-  FOREIGN KEY (inventory_field_id)
-    REFERENCES inventory_fields (id) MATCH SIMPLE
     ON UPDATE NO ACTION ON DELETE NO ACTION
 );

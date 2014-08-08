@@ -1,7 +1,7 @@
 package controllers
 
-import contexts.{DeleteProductContext, ManufactureProductContext}
-import jsons.{InventoryConsumptionJson, ProductJson}
+import contexts.DeleteProductContext
+import jsons.ProductJson
 import models.Product
 import play.api.data.Forms._
 import play.api.data._
@@ -55,39 +55,6 @@ object ProductsController extends KiwiERPController {
 
   def delete(id: Long) = AuthorizedAction.async {
     DeleteProductContext(id) map (_ => NoContent)
-  }
-
-  def manufacture(id: Long) = AuthorizedAction.async(parse.urlFormEncoded) { implicit req =>
-    case class ManufactureForm(consumedNum: Int, partsList: List[ManufacturePartsListForm])
-    case class ManufacturePartsListForm(partsId: Long, inventories: List[ManufactureInventoriesForm])
-    case class ManufactureInventoriesForm(inventoryId: Long, quantity: Int)
-
-    val form = Form(
-      mapping(
-        "consumedNum" -> number(min = 1),
-        "partsList" -> list(
-          mapping(
-            "partsId" -> longNumber(min = 1),
-            "inventories" -> list(
-              mapping(
-                "inventoryId" -> longNumber(min = 1),
-                "quantity" -> number(min = 1)
-              )(ManufactureInventoriesForm.apply)(ManufactureInventoriesForm.unapply))
-          )(ManufacturePartsListForm.apply)(ManufacturePartsListForm.unapply))
-      )(ManufactureForm.apply)(ManufactureForm.unapply))
-
-    form.bindFromRequestAndCheckErrors { f =>
-      val inventoryIdsList = f.partsList flatMap { parts =>
-        parts.inventories map (inventory => inventory.inventoryId -> inventory.quantity)
-      }
-
-      val partsIds = f.partsList map (_.partsId)
-      val inventoryIds = inventoryIdsList.toMap
-
-      ManufactureProductContext(id, f.consumedNum, partsIds, inventoryIds) map { inventoryConsumption =>
-        CreatedWithLocation(InventoryConsumptionJson.create(inventoryConsumption))
-      }
-    }
   }
 
 }

@@ -12,7 +12,6 @@ POST          /products                        controllers.ProductsController.cr
 GET           /products/:id                    controllers.ProductsController.read(id: Long)
 PATCH         /products/:id                    controllers.ProductsController.update(id: Long)
 DELETE        /products/:id                    controllers.ProductsController.delete(id: Long)
-POST          /products/:id/manufacture        controllers.ProductsController.manufacture(id: Long)
 
 # Parts
 GET           /parts                           controllers.PartsController.index
@@ -42,10 +41,3 @@ POST          /inventoryorders                 controllers.InventoryOrdersContro
 GET           /inventoryorders/:id             controllers.InventoryOrdersController.read(id: Long)
 PATCH         /inventoryorders/:id             controllers.InventoryOrdersController.update(id: Long)
 DELETE        /inventoryorders/:id             controllers.InventoryOrdersController.delete(id: Long)
-
-# InventoryField
-# GET           /inventoryfields                 controllers.InventoryFieldsController.index
-# POST          /inventoryfields                 controllers.InventoryFieldsController.create
-# GET           /inventoryfields/:id             controllers.InventoryFieldsController.read(id: Long)
-# PATCH         /inventoryfields/:id             controllers.InventoryFieldsController.update(id: Long)
-# DELETE        /inventoryfields/:id             controllers.InventoryFieldsController.delete(id: Long)

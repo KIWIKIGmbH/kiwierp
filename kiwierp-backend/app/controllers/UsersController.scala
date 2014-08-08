@@ -1,6 +1,6 @@
 package controllers
 
-import contexts.{CreateUserContext, AuthenticationContext, ReadUserContext}
+import contexts.{AuthenticationContext, CreateUserContext, ReadUserContext}
 import jsons.UserJson
 import models.User
 import play.api.data.Forms._

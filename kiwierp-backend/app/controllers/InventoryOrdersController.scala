@@ -7,7 +7,6 @@ import org.joda.time.DateTime
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import utils.exceptions.InvalidRequest
 
 object InventoryOrdersController extends KiwiERPController {
 
