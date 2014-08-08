@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>kiwierp</title>
+
+  <!-- Core CSS - Include with every page -->
+  <!-- build:css styles/vendor.css -->
+  <!-- bower:css -->
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+  <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
+  <!-- endbower -->
+  <!-- endbuild -->
+
+  <!-- SB Admin CSS - Include with every page -->
+  <!-- build:css({.tmp,app}) styles/main.css -->
+  <link rel="stylesheet" href="styles/sb-admin.css">
+  <!-- endbuild -->
+</head>
+<body data-ng-app="app" data-ng-controller="ApplicationCtrl">
+<div id="wrapper">
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
+    <div data-ke-navbar-header></div>
+    <div data-ke-navbar-top-links></div>
+    <div data-ke-sidebar></div>
+  </nav>
+  <div id="page-wrapper" data-ke-wrapper data-ng-view></div>
+</div>
+<!-- /#wrapper -->
+
+<!-- Core Scripts - Include with every page -->
+<!-- build:js scripts/vendor.js -->
+<!-- bower:js -->
+<script src="bower_components/jquery/dist/jquery.js"></script>
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+<script src="bower_components/angular-resource/angular-resource.js"></script>
+<script src="bower_components/angular-cookies/angular-cookies.js"></script>
+<script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+<script src="bower_components/angular-route/angular-route.js"></script>
+<script src="bower_components/angularLocalStorage/src/angularLocalStorage.js"></script>
+<script src="bower_components/metisMenu/jquery.metisMenu.js"></script>
+<script src="bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js"></script>
+<script src="bower_components/angular-base64/angular-base64.js"></script>
+<!-- endbower -->
+<!-- endbuild -->
+
+<!-- build:js({.tmp,app}) scripts/scripts.js -->
+<script src="scripts/app.js"></script>
+<script src="scripts/common/common.js"></script>
+<script src="scripts/common/services/authorization-service.js"></script>
+<script src="scripts/common/services/content-type.js"></script>
+<script src="scripts/common/services/http-interceptor.js"></script>
+<script src="scripts/common/services/remove-alert.js"></script>
+<script src="scripts/common/directives/ke-collapse.js"></script>
+<script src="scripts/common/directives/ke-navbar-header.js"></script>
+<script src="scripts/common/directives/ke-navbar-top-links.js"></script>
+<script src="scripts/common/directives/ke-side-menu.js"></script>
+<script src="scripts/common/directives/ke-sidebar.js"></script>
+<script src="scripts/common/directives/ke-wrapper.js"></script>
+<script src="scripts/common/controllers/application-controller.js"></script>
+<script src="scripts/common/controllers/dashboard-controller.js"></script>
+<script src="scripts/authentication/authentication.js"></script>
+<script src="scripts/authentication/services/authentication-service.js"></script>
+<script src="scripts/authentication/controllers/login-controller.js"></script>
+<script src="scripts/authentication/controllers/logout-controller.js"></script>
+<script src="scripts/inventory/inventory.js"></script>
+<script src="scripts/inventory/services/inventory-service.js"></script>
+<script src="scripts/inventory/services/order-service.js"></script>
+<script src="scripts/inventory/services/parts-service.js"></script>
+<script src="scripts/inventory/services/product-service.js"></script>
+<script src="scripts/inventory/services/supplier-service.js"></script>
+<script src="scripts/inventory/directives/ke-inventory-table.js"></script>
+<script src="scripts/inventory/directives/ke-order-table.js"></script>
+<script src="scripts/inventory/directives/ke-parts-panels.js"></script>
+<script src="scripts/inventory/controllers/inventories-controller.js"></script>
+<script src="scripts/inventory/controllers/orders-controller.js"></script>
+<script src="scripts/inventory/controllers/parts-controller.js"></script>
+<script src="scripts/inventory/controllers/products-controller.js"></script>
+<script src="scripts/inventory/controllers/sidebar-controller.js"></script>
+<script src="scripts/inventory/controllers/suppliers-controller.js"></script>
+<!-- endbuild -->
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<div class="col-lg-12" data-ng-controller="PartsCtrl">
+  <div class="panel panel-default" data-ng-repeat="pa in product.partsList">
+    <div class="panel-heading">
+      <h2>{{ pa.name }}</h2>
+    </div>
+    <!-- .panel-heading -->
+    <div class="panel-body">
+      <button type="button" class="btn btn-xs btn-warning pull-right" style="margin-left: 10px" data-ng-click="openOrderPartsForm(pa)">Order Parts</button>
+      <button type="button" class="btn btn-xs btn-primary pull-right" style="margin-left: 10px" data-ng-click="openEditPartsForm(pa)">Edit Parts</button>
+      <button type="button" class="btn btn-xs btn-success pull-right" style="margin-left: 10px" data-ng-click="openNewInventoryForm(pa)">Add Inventory</button>
+      <p class="lead">{{ pa.description }}</p>
+      <div data-ke-inventory-table></div>
+      <div data-ke-order-table></div>
+    </div>
+    <!-- /.panel-body -->
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="$dismiss()">×</button>
+  <h3>Classify Parts</h3>
+</div>
+<div class="modal-body">
+  <form role="form">
+    <div class="form-group">
+      <label>Classified Quantity</label>
+      <input type="number" class="form-control" placeholder="Classified Quantity" data-ng-model="classifyForm.classifiedQuantity" />
+    </div>
+    <div class="form-group">
+      <label>Classify Parts to New or Exist Inventory</label>
+      <select data-ng-model="classifyForm.inventoryId">
+        <option value="">Create New Inventory</option>
+        <option data-ng-repeat="i in inventories" value="{{ i.id }}">{{ parts.name }} Inventory {{ $index + 1 }} {{ !!i.description ? "(" + i.description + ")" : "" }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Description for New Inventory (If You Create New One)</label>
+      <textarea class="form-control" rows="3" data-ng-model="classifyForm.inventoryDescription"></textarea>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-lg btn-warning" data-ng-click="classifyParts()">Classify</button>
+</div>

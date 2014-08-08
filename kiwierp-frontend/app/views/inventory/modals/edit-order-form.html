@@ -1,0 +1,24 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="$dismiss()">×</button>
+  <h3>Edit Order Status</h3>
+</div>
+<div class="modal-body">
+  <form role="form">
+    <div class="form-group">
+      <label>Order Status</label>
+      <select data-ng-model="orderForm.status">
+        <option data-ng-repeat="s in status" value="{{ s }}">{{ s }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Order Status Changed Date</label>
+      <input type="datetime" class="form-control" placeholder="Order Date" data-ng-model="orderForm.statusChangedDate" />
+    </div>
+  </form>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-lg btn-danger" data-ng-click="removeOrderAlert()">Remove</button>
+    or
+    <button type="button" class="btn btn-lg btn-primary" data-ng-click="editOrder()">Update</button>
+  </div>
+</div>
+
