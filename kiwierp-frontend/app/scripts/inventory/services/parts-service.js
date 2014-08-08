@@ -11,7 +11,7 @@ angular.module('inventory.services')
           });
         },
 
-        openNewPartsForm: function (scope, productId) {
+        openNewPartsForm: function (scope, productId, callback) {
           var modalInstance = service.openPartsForm(scope);
 
           scope.partsForm = {};
@@ -30,6 +30,9 @@ angular.module('inventory.services')
             )
               .success(function () {
                 modalInstance.close();
+                if (!!callback) {
+                  callback();
+                }
               });
           };
         },

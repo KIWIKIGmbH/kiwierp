@@ -7,6 +7,10 @@ angular.module('inventory.controllers')
         return orderService.deliveredOrders(orders);
       };
 
+      $scope.isDelivered = function (status) {
+        return status === "delivered";
+      };
+
       $scope.openEditOrderForm = function (inventoryOrder) {
         var modalInstance = $modal.open({
           templateUrl: '/views/inventory/modals/edit-order-form.html',

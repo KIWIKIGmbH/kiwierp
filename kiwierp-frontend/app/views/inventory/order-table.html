@@ -22,7 +22,7 @@
         <td>{{ io.deliveredDate }}</td>
         <td>{{ io.status }}</td>
         <td>
-          <a href="" data-ng-click="openEditOrderForm(io)">Edit</a>
+          <a href="" data-ng-click="openEditOrderForm(io)" ng-hide="isDelivered(io.status)">Edit</a>
         </td>
       </tr>
       <tr>

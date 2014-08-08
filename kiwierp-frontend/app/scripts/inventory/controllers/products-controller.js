@@ -67,7 +67,7 @@ angular.module('inventory.controllers')
       };
 
       $scope.openNewPartsForm = function () {
-        partsService.openNewPartsForm($scope, $scope.product.id);
+        partsService.openNewPartsForm($scope, $scope.product.id, $scope.reloadProduct);
       };
 
     }]);

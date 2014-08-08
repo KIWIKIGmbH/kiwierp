@@ -51,7 +51,7 @@ angular.module('inventory.controllers')
 
               $scope.reloadProducts();
 
-              partsService.openNewPartsForm($scope, product.id);
+              partsService.openNewPartsForm($scope, product.id, null);
 
               modalInstance.close();
             });
