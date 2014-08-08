@@ -18,7 +18,14 @@ angular.module('inventory.controllers')
           $scope.reloadProducts();
         } else {
           $scope.token = null;
-          $scope.products = {}
+          $scope.products = {};
+        }
+      });
+
+      $rootScope.$watch('isProductRemoved', function (newVal) {
+        if (newVal) {
+          $scope.reloadProducts();
+          $rootScope.isProductRemoved = false;
         }
       });
 

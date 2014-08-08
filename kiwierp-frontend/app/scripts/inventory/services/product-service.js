@@ -43,7 +43,7 @@ angular.module('inventory.services')
             var url = '/api/v1/products/' + productId + '?token=' + token;
             return $http.get(url);
           } else {
-            $q.reject();
+            return $q.reject();
           }
         },
 

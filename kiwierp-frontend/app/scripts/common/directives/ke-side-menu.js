@@ -4,9 +4,9 @@ angular.module('common.directives')
   .directive('keSideMenu', [function () {
     return {
       link: function (scope, element) {
-        element.metisMenu()
+        element.metisMenu();
       }
-    }
+    };
   }]);
 
 /*

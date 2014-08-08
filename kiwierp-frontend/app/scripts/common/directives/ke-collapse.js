@@ -9,7 +9,7 @@ angular.module('common.directives')
           width < 768 ? element.addClass('collapse') : element.removeClass('collapse');
         });
       }
-    }
+    };
   }]);
 
 /*

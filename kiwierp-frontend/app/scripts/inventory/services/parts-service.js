@@ -30,7 +30,7 @@ angular.module('inventory.services')
             )
               .success(function () {
                 modalInstance.close();
-              })
+              });
           };
         },
 

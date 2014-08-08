@@ -41,7 +41,7 @@ angular.module('inventory.controllers')
                 $scope.reloadProduct();
                 removeModalInstance.close();
               });
-          }
+          };
         };
 
         $scope.editParts = function () {

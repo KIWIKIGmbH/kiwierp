@@ -1,12 +1,13 @@
 'use strict';
 
 angular.module('common.controllers')
-  .controller('DashboardCtrl', ['$rootScope', '$location',
-    function ($rootScope, $location) {
+  .controller('DashboardCtrl', ['$scope', 'productService', 'authorizationService',
+    function ($scope, productService, authorizationService) {
       // TODO
-      $rootScope.$watch('isLoggedIn', function (newVal) {
-        if (!newVal) {
-          $location.path('/login');
-        }
-      });
+      $scope.token = authorizationService.token();
+
+      productService.products($scope.token)
+        .success(function (data) {
+          $scope.dashboardProducts = data.results;
+        });
     }]);

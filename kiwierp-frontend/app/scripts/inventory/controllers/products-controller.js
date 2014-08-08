@@ -46,6 +46,7 @@ angular.module('inventory.controllers')
             productService.removeProduct($scope.product.id, $scope.token)
               .success(function () {
                 removeModalInstance.close();
+                $rootScope.isProductRemoved = true;
                 $location.path('/');
               });
           };
@@ -62,7 +63,7 @@ angular.module('inventory.controllers')
                 modalInstance.close();
               });
           };
-        }
+        };
       };
 
       $scope.openNewPartsForm = function () {

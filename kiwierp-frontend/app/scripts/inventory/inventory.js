@@ -20,6 +20,6 @@ angular.module('inventory', [
         })
         .when('/inventory/suppliers', {
           templateUrl: '/views/inventory/suppliers.html',
-          controller: 'SuppliersCtrl',
+          controller: 'SuppliersCtrl'
         });
     }]);

@@ -14,5 +14,5 @@ angular.module('authentication', [
         .when('/login', {
           templateUrl: '/views/authentication/login.html',
           controller: 'LoginCtrl'
-        })
+        });
     }]);

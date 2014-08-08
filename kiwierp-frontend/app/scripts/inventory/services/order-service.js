@@ -15,6 +15,8 @@ angular.module('inventory.services')
             return ['shipped'];
           } else if (status === 'shipped') {
             return ['delivered'];
+          } else {
+            return [];
           }
         },
 
@@ -34,7 +36,7 @@ angular.module('inventory.services')
           var url = '/api/v1/inventoryorders/' + inventoryOrderId + '?token=' + token;
           var data = {
             status: status,
-            statusChangedDate: statusChangedDate,
+            statusChangedDate: statusChangedDate
           };
 
           return $http({

@@ -34,5 +34,5 @@ angular.module('inventory.services')
 
           return $http.delete(url);
         }
-      }
+      };
     }]);
