@@ -103,4 +103,22 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
       .and.isNull(column.deletedAt)
   }
 
+  def destroyAllByPartsId(partsId: Long, deletedAt: DateTime = DateTime.now)(implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
+    update(Inventory)
+      .set(
+        column.deletedAt -> deletedAt
+      )
+      .where.eq(column.partsId, partsId)
+      .and.isNull(column.deletedAt)
+  }
+
+  def destroyAllByPartsIds(partsIds: Seq[Long], deletedAt: DateTime = DateTime.now)(implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
+    update(Inventory)
+      .set(
+        column.deletedAt -> deletedAt
+      )
+      .where.in(column.partsId, partsIds)
+      .and.isNull(column.deletedAt)
+  }
+
 }

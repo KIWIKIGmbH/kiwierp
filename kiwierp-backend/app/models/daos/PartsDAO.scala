@@ -75,19 +75,6 @@ trait PartsDAO extends KiwiERPDAO[Parts] {
       .offset((page - 1) * DEFAULT_LIMIT)
   } mapListFuture apply(pa)
 
-  def findWithInventories(id: Long)(implicit s: ADS = AsyncDB.sharedSession): Future[Parts] = withSQL {
-    selectFrom[Parts](Parts as pa)
-      .leftJoin(Inventory as i).on(
-        sqls
-          .eq(i.partsId, pa.id)
-          .and.isNull(i.deletedAt)
-      )
-      .where.eq(pa.id, id)
-      .and.append(isNotDeleted)
-  }.one(apply(pa)).toMany(Inventory.opt(i)).map { (parts, inventories) =>
-    parts.copy(inventories = inventories)
-  }.single().future map getOrNotFound
-
   def save(id: Long)(name: String, description: Option[String], neededQuantity: Int)
           (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFutureOrNotFound {
     update(Parts)
@@ -108,6 +95,16 @@ trait PartsDAO extends KiwiERPDAO[Parts] {
           column.unclassifiedQuantity -> unclassifiedQuantity
         )
         .where.eq(column.id, id)
+        .and.isNull(column.deletedAt)
+    }
+
+  def destroyAllByProductId(productId: Long, deletedAt: DateTime = DateTime.now)(implicit s: ADS = AsyncDB.sharedSession): Future[Int] =
+    updateFuture {
+      update(Parts)
+        .set(
+          column.deletedAt -> deletedAt
+        )
+        .where.eq(column.productId, productId)
         .and.isNull(column.deletedAt)
     }
 

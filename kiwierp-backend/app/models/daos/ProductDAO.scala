@@ -85,32 +85,7 @@ trait ProductDAO extends KiwiERPDAO[Product] {
       )
     }.single().future map getOrNotFound
 
-  def findWithPartsAndInventoriesFromIds(id: Long, partsIds: List[Long], inventoryIds: List[Long])(implicit s: ADS = AsyncDB.sharedSession): Future[Product] =
-    withSQL {
-      selectFrom[Product](Product as pr)
-        .leftJoin(Parts as pa).on(
-          sqls
-            .eq(pa.productId, pr.id)
-            .and.in(pa.id, partsIds)
-            .and.isNull(pa.deletedAt)
-        )
-        .leftJoin(Inventory as i).on(
-          sqls
-            .eq(i.partsId, pa.id)
-            .and.in(i.id, inventoryIds)
-            .and.isNull(i.deletedAt)
-        )
-        .where.eq(pr.id, id)
-        .and.append(isNotDeleted)
-    }.one(apply(pr)).toManies(Parts.opt(pa), Inventory.opt(i)).map { (product, partsSeq, inventories) =>
-      product.copy(
-        partsSeq = partsSeq map { parts =>
-          parts.copy(inventories = inventories filter (_.partsId == parts.id))
-        }
-      )
-    }.single().future map getOrNotFound
-
-  def findWithPartsAndInventories(id: Long)(implicit s: ADS = AsyncDB.sharedSession): Future[Product] =
+  def findWithPartsSeq(id: Long)(implicit s: ADS = AsyncDB.sharedSession): Future[Product] =
     withSQL {
       selectFrom[Product](Product as pr)
         .leftJoin(Parts as pa).on(
@@ -118,19 +93,10 @@ trait ProductDAO extends KiwiERPDAO[Product] {
             .eq(pa.productId, pr.id)
             .and.isNull(pa.deletedAt)
         )
-        .leftJoin(Inventory as i).on(
-          sqls
-            .eq(i.partsId, pa.id)
-            .and.isNull(i.deletedAt)
-        )
         .where.eq(pr.id, id)
         .and.append(isNotDeleted)
-    }.one(apply(pr)).toManies(Parts.opt(pa), Inventory.opt(i)).map { (product, partsSeq, inventories) =>
-      product.copy(
-        partsSeq = partsSeq map { parts =>
-          parts.copy(inventories = inventories filter (_.partsId == parts.id))
-        }
-      )
+    }.one(apply(pr)).toMany(Parts.opt(pa)).map { (product, partsSeq) =>
+      product.copy(partsSeq = partsSeq)
     }.single().future map getOrNotFound
 
   def save(id: Long)(name: String, description: Option[String])(implicit s: ADS = AsyncDB.sharedSession): Future[Int] =

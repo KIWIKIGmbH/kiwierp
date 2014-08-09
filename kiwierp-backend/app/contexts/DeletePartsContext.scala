@@ -13,13 +13,9 @@ class DeletePartsContext private (parts: Parts, deletedAt: DateTime = DateTime.n
   private def delete(): Future[Int] = {
     val deletedParts = new Parts(parts) with DeletedParts
 
-    val deletedInventoriesNumSeq = deletedParts.inventories map { inventory =>
-      val deletedInventory = new Inventory(inventory) with DeletedInventory
-
-      deletedParts.deleteInventory(deletedInventory, deletedAt)
+    deletedParts.deleteInventories(deletedAt) flatMap { _ =>
+      deletedParts.deleted(deletedAt)
     }
-
-    Future.sequence(deletedInventoriesNumSeq) flatMap (_ => deletedParts.deleted(deletedAt))
   }
 
 }
@@ -27,7 +23,7 @@ class DeletePartsContext private (parts: Parts, deletedAt: DateTime = DateTime.n
 object DeletePartsContext {
 
   def apply(id: Long): Future[Int] = AsyncDB localTx { implicit tx =>
-    Parts.findWithInventories(id) flatMap { parts =>
+    Parts.find(id) flatMap { parts =>
       new DeletePartsContext(parts).delete()
     }
   }
