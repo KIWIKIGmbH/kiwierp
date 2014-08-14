@@ -1,6 +1,6 @@
 package utils.exceptions
 
-class ExpiredToken extends KiwiERPException {
+class ExpiredToken(val message: String = "") extends KiwiERPException {
 
   val error = "expired_token"
 

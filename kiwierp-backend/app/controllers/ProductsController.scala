@@ -22,8 +22,8 @@ object ProductsController extends KiwiERPController {
 
     val form = Form(
       mapping(
-        "name" -> nonEmptyText,
-        "description" -> optional(text)
+        "name" -> nonEmptyText(minLength = 1, maxLength = 120),
+        "description" -> optional(text(maxLength = 500))
       )(CreateForm.apply)(CreateForm.unapply))
 
     form.bindFromRequestAndCheckErrors { f =>
@@ -44,8 +44,8 @@ object ProductsController extends KiwiERPController {
 
     val form = Form(
       mapping(
-        "name" -> text,
-        "description" -> optional(text)
+        "name" -> nonEmptyText(minLength = 1, maxLength = 120),
+        "description" -> optional(text(maxLength = 500))
       )(UpdateForm.apply)(UpdateForm.unapply))
 
     form.bindFromRequestAndCheckErrors { f =>

@@ -1,6 +1,6 @@
 package utils.exceptions
 
-class ServerError extends KiwiERPException {
+class ServerError(val message: String = "") extends KiwiERPException {
 
   val error = "server_error"
 

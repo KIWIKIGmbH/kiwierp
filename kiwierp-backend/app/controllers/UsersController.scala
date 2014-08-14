@@ -22,9 +22,9 @@ object UsersController extends KiwiERPController {
 
     val form = Form(
       mapping(
-        "name" -> nonEmptyText,
-        "password" -> nonEmptyText,
-        "userType" -> nonEmptyText
+        "name" -> nonEmptyText(minLength = 1, maxLength = 60),
+        "password" -> nonEmptyText(minLength = 1, maxLength = 64),
+        "userType" -> nonEmptyText(minLength = 1, maxLength = 8)
       )(CreateForm.apply)(CreateForm.unapply))
 
     form.bindFromRequestAndCheckErrors { f =>
@@ -45,8 +45,8 @@ object UsersController extends KiwiERPController {
 
     val form = Form(
       mapping(
-        "name" -> nonEmptyText,
-        "userType" -> nonEmptyText
+        "name" -> nonEmptyText(minLength = 1, maxLength = 60),
+        "userType" -> nonEmptyText(minLength = 1, maxLength = 10)
       )(UpdateForm.apply)(UpdateForm.unapply))
 
     form.bindFromRequestAndCheckErrors { f =>
@@ -63,8 +63,8 @@ object UsersController extends KiwiERPController {
 
     val form = Form(
       mapping(
-        "name" -> nonEmptyText,
-        "password" -> nonEmptyText
+        "name" -> nonEmptyText(minLength = 1, maxLength = 60),
+        "password" -> nonEmptyText(minLength = 1, maxLength = 64)
       )(AuthenticateForm.apply)(AuthenticateForm.unapply))
 
     form.bindFromRequestAndCheckErrors { f =>

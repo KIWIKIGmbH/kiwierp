@@ -1,6 +1,6 @@
 package utils.exceptions
 
-class TemporarilyUnavailable extends KiwiERPException {
+class TemporarilyUnavailable(val message: String = "") extends KiwiERPException {
 
   val error = "temporarily_unavailable"
 

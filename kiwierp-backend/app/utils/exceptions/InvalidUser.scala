@@ -1,6 +1,6 @@
 package utils.exceptions
 
-class InvalidUser extends KiwiERPException {
+class InvalidUser(val message: String = "") extends KiwiERPException {
 
   val error = "invalid_user"
 

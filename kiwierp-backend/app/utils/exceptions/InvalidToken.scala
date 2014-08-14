@@ -1,6 +1,6 @@
 package utils.exceptions
 
-class InvalidToken extends KiwiERPException {
+class InvalidToken(val message: String = "") extends KiwiERPException {
 
   val error = "invalid_token"
 

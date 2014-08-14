@@ -1,9 +1,9 @@
 package contexts
 
-import models.{Inventory, Parts}
+import models.Parts
 import org.joda.time.DateTime
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import roles.{DeletedInventory, DeletedParts}
+import roles.DeletedParts
 import scalikejdbc.async.{AsyncDB, AsyncDBSession}
 
 import scala.concurrent.Future

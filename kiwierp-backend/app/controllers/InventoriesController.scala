@@ -27,9 +27,9 @@ object InventoriesController extends KiwiERPController {
 
     val form = Form(
       mapping(
-        "partsId" -> longNumber(min = 1),
-        "description" -> optional(text),
-        "quantity" -> number(min = 1)
+        "partsId" -> longNumber(min = 0, max = MAX_LONG_NUMBER),
+        "description" -> optional(text(maxLength = 500)),
+        "quantity" -> number(min = 1, max = MAX_NUMBER)
       )(CreateForm.apply)(CreateForm.unapply))
 
     form.bindFromRequestAndCheckErrors { f =>
@@ -50,8 +50,8 @@ object InventoriesController extends KiwiERPController {
 
     val form = Form(
       mapping(
-        "description" -> optional(text),
-        "quantity" -> number(min = 1)
+        "description" -> optional(text(maxLength = 500)),
+        "quantity" -> number(min = 1, max = MAX_NUMBER)
       )(UpdateForm.apply)(UpdateForm.unapply))
 
     form.bindFromRequestAndCheckErrors { f =>

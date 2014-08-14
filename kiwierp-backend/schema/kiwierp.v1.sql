@@ -91,7 +91,7 @@ CREATE TABLE inventory_orders (
   id serial PRIMARY KEY,
   parts_id integer NOT NULL,
   supplier_id integer NOT NULL,
-  ordered integer NOT NULL,
+  quantity integer NOT NULL,
   ordered_date timestamp with time zone NOT NULL,
   shipped_date timestamp with time zone,
   delivered_date timestamp with time zone,

@@ -1,6 +1,6 @@
 package utils.exceptions
 
-class APINotImplemented extends KiwiERPException {
+class APINotImplemented(val message: String = "") extends KiwiERPException {
 
   val error = "api_not_implemented"
 

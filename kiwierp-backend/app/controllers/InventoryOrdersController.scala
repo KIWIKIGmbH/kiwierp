@@ -23,18 +23,18 @@ object InventoryOrdersController extends KiwiERPController {
   }
 
   def create = AuthorizedAction.async(parse.urlFormEncoded) { implicit req =>
-    case class CreateForm(partsId: Long, supplierId: Long, orderedNum: Int, orderedDate: DateTime)
+    case class CreateForm(partsId: Long, supplierId: Long, quantity: Int, orderedDate: DateTime)
 
     val form = Form(
       mapping(
-        "partsId" -> longNumber(min = 1),
-        "supplierId" -> longNumber(min = 1),
-        "orderedNum" -> number(min = 1),
+        "partsId" -> longNumber(min = 1, max = MAX_LONG_NUMBER),
+        "supplierId" -> longNumber(min = 1, max = MAX_LONG_NUMBER),
+        "quantity" -> number(min = 1, max = MAX_NUMBER),
         "orderedDate" -> jodaDate(pattern = DATETIME_PATTERN)
       )(CreateForm.apply)(CreateForm.unapply))
 
     form.bindFromRequestAndCheckErrors { f =>
-      CreateInventoryOrderContext(f.partsId, f.supplierId, f.orderedNum, f.orderedDate) map { inventoryOrder =>
+      CreateInventoryOrderContext(f.partsId, f.supplierId, f.quantity, f.orderedDate) map { inventoryOrder =>
         CreatedWithLocation(InventoryOrderJson.create(inventoryOrder))
       }
     }
@@ -51,7 +51,7 @@ object InventoryOrdersController extends KiwiERPController {
 
     val form = Form(
       mapping(
-        "status" -> nonEmptyText,
+        "status" -> nonEmptyText(minLength = 1, maxLength = 10),
         "statusChangedDate" -> jodaDate(pattern = DATETIME_PATTERN)
       )(UpdateForm.apply)(UpdateForm.unapply))
 

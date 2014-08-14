@@ -1,6 +1,6 @@
 package utils.exceptions
 
-class ResourceNotFound extends KiwiERPException {
+class ResourceNotFound(val message: String = "") extends KiwiERPException {
 
   val error = "not_found"
 

@@ -1,6 +1,6 @@
 package utils.exceptions
 
-class AccessForbidden extends KiwiERPException {
+class AccessForbidden(val message: String = "") extends KiwiERPException {
 
   val error = "access_forbidden"
 

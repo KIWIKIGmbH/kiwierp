@@ -10,10 +10,10 @@ trait OrderReceivedSupplier {
 
   this: Supplier =>
 
-  def receiveOrder(orderedParts: Parts with OrderedParts, orderedNum: Int, orderedDate: DateTime)(implicit s: AsyncDBSession): Future[InventoryOrder] = {
+  def receiveOrder(orderedParts: Parts with OrderedParts, quantity: Int, orderedDate: DateTime)(implicit s: AsyncDBSession): Future[InventoryOrder] = {
     val INITIAL_STATUS = "ordered"
 
-    InventoryOrder.create(orderedParts.id, id, orderedNum, orderedDate, INITIAL_STATUS)
+    InventoryOrder.create(orderedParts.id, id, quantity, orderedDate, INITIAL_STATUS)
   }
 
 }

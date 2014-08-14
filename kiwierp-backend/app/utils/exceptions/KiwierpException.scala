@@ -6,4 +6,6 @@ trait KiwiERPException extends RuntimeException {
 
   val status: Int
 
+  val message: String
+
 }
