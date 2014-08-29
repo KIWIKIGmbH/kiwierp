@@ -55,7 +55,7 @@ trait KiwiERPController extends Controller {
 
   def isNum(numStr: String): Boolean = numStr matches "^[1-9]\\d*$"
 
-  def isId(idStr: String): Boolean = isNum(idStr)
+  def isId(idStr: String): Boolean = isNum(idStr) && idStr.toLong < MAX_LONG_NUMBER
 
   implicit class BindFromRequestAndCheckErrors[T](self: Form[T]) {
 
