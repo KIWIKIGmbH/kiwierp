@@ -13,6 +13,7 @@ import utils.exceptions._
 import scala.concurrent.Future
 
 trait KiwiERPController extends Controller {
+
   val DATETIME_PATTERN = "yyyy-MM-dd HH:mm"
 
   val MAX_NUMBER = 2147483647
@@ -38,14 +39,13 @@ trait KiwiERPController extends Controller {
 
   object AuthorizedAction {
 
-    def async[A](p: BodyParser[A])(block: AuthorizedRequest[A] => Future[Result]): Action[A] =
-      KiwiERPAction.async(p) { req =>
-        val authorize: String => Future[AccessToken] = token => AuthorizationContext(token, req.method, req.path)
-        val result: AccessToken => Future[Result] = accessToken => block(new AuthorizedRequest(accessToken, req))
-        val err = KiwiERPError.futureResult(new InvalidRequest)
+    def async[A](p: BodyParser[A])(block: AuthorizedRequest[A] => Future[Result]): Action[A] = KiwiERPAction.async(p) { req =>
+      val authorize: String => Future[AccessToken] = token => AuthorizationContext(token, req.method, req.path)
+      val result: AccessToken => Future[Result] = accessToken => block(new AuthorizedRequest(accessToken, req))
+      val err = KiwiERPError.futureResult(new InvalidRequest)
 
-        req.getQueryString("token") map (authorize(_) flatMap result) getOrElse err
-      }
+      req.getQueryString("token") map (authorize(_) flatMap result) getOrElse err
+    }
 
     def async(block: AuthorizedRequest[AnyContent] => Future[Result]): Action[AnyContent] = async(parse.anyContent)(block)
 
@@ -60,7 +60,7 @@ trait KiwiERPController extends Controller {
   implicit class BindFromRequestAndCheckErrors[T](self: Form[T]) {
 
     def bindFromRequestAndCheckErrors(success: T => Future[Result])(implicit req: Request[Map[String, Seq[String]]]): Future[Result] = {
-      val hasErrors: Form[T] => Future[Result] = ef => throw new InvalidRequest(ef.errors.head.key)
+      val hasErrors: Form[T] => Future[Result] = ef => throw new InvalidRequest
 
       self.bindFromRequest.fold(hasErrors, success)
     }
