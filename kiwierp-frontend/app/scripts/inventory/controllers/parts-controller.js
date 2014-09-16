@@ -104,6 +104,8 @@ angular.module('inventory.controllers')
 
         $scope.orderForm = {};
 
+        $scope.orderForm.orderedDate = new Date();
+
         $scope.orderParts = function () {
 
           orderService.orderParts(

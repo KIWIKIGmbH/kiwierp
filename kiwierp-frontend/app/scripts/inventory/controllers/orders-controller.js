@@ -19,6 +19,8 @@ angular.module('inventory.controllers')
 
         $scope.orderForm = {};
 
+        $scope.orderForm.statusChangedDate = new Date();
+
         $scope.status = orderService.nextStatus(inventoryOrder.status);
 
         $scope.removeOrderAlert = function () {
