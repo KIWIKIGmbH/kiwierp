@@ -12,11 +12,12 @@
     </div>
     <div class="form-group">
       <label>Order Quantity</label>
-      <input type="number" class="form-control" placeholder="Order Quantity" data-ng-model="orderForm.orderedNum" />
+      <input type="number" class="form-control" placeholder="Order Quantity" data-ng-model="orderForm.quantity" />
     </div>
     <div class="form-group">
       <label>Order Date</label>
-      <input type="datetime" class="form-control" placeholder="Order Date" data-ng-model="orderForm.orderedDate" />
+      <div data-ng-model="orderForm.orderedDate" data-datepicker></div>
+      <div data-ng-model="orderForm.orderedDate"  data-timepicker></div>
     </div>
   </form>
 </div>

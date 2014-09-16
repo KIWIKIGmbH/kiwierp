@@ -105,10 +105,11 @@ angular.module('inventory.controllers')
         $scope.orderForm = {};
 
         $scope.orderParts = function () {
+
           orderService.orderParts(
             $scope.parts,
             $scope.orderForm.supplierId,
-            $scope.orderForm.orderedNum,
+            $scope.orderForm.quantity,
             $scope.orderForm.orderedDate,
             $scope.token
           )

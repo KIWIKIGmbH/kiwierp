@@ -11,8 +11,8 @@ angular.module('common', [
   'common.directives',
   'common.controllers',
 ])
-  .config(['$routeProvider', '$httpProvider', 'contentType',
-    function ($routeProvider, $httpProvider, contentType) {
+  .config(['$routeProvider', '$httpProvider', 'contentType', 'datepickerConfig', 'timepickerConfig',
+    function ($routeProvider, $httpProvider, contentType, datepickerConfig, timepickerConfig) {
       $routeProvider
         .when('/', {
           templateUrl: '/views/common/dashboard.html',
@@ -28,4 +28,7 @@ angular.module('common', [
 
       $httpProvider.defaults.headers.post['Content-Type'] = contentType;
       $httpProvider.defaults.headers.patch['Content-Type'] = contentType;
+
+      datepickerConfig.showWeeks = false;
+      timepickerConfig.showMeridian = false;
     }]);

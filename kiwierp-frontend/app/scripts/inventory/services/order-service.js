@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('inventory.services')
-  .factory('orderService', ['$http',
-    function ($http) {
+  .factory('orderService', ['$http', 'dateFormatter',
+    function ($http, dateFormatter) {
       return {
         deliveredOrders: function (orders) {
           return orders.filter(function (o) {
@@ -20,13 +20,13 @@ angular.module('inventory.services')
           }
         },
 
-        orderParts: function (parts, supplierId, orderedNum, orderedDate, token) {
+        orderParts: function (parts, supplierId, quantity, orderedDate, token) {
           var url = '/api/v1/inventoryorders?token=' + token;
           var data = {
             partsId: parts.id,
             supplierId: supplierId,
-            orderedNum: orderedNum,
-            orderedDate: orderedDate
+            quantity: quantity,
+            orderedDate: dateFormatter.format(orderedDate)
           };
 
           return $http.post(url, data);
@@ -36,7 +36,7 @@ angular.module('inventory.services')
           var url = '/api/v1/inventoryorders/' + inventoryOrderId + '?token=' + token;
           var data = {
             status: status,
-            statusChangedDate: statusChangedDate
+            statusChangedDate: dateFormatter.format(statusChangedDate)
           };
 
           return $http({
