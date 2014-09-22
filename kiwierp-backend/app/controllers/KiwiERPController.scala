@@ -60,7 +60,7 @@ trait KiwiERPController extends Controller {
   implicit class BindFromRequestAndCheckErrors[T](self: Form[T]) {
 
     def bindFromRequestAndCheckErrors(success: T => Future[Result])(implicit req: Request[Map[String, Seq[String]]]): Future[Result] = {
-      val hasErrors: Form[T] => Future[Result] = ef => throw new InvalidRequest
+      val hasErrors: Form[T] => Future[Result] = ef => KiwiERPError.futureResult(new InvalidRequest)
 
       self.bindFromRequest.fold(hasErrors, success)
     }
