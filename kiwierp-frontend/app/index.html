@@ -1,8 +1,8 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>kiwierp</title>
 
@@ -16,19 +16,11 @@
 
   <!-- SB Admin CSS - Include with every page -->
   <!-- build:css({.tmp,app}) styles/main.css -->
-  <link rel="stylesheet" href="styles/sb-admin.css">
+  <link rel="stylesheet" href="styles/sb-admin.css" />
   <!-- endbuild -->
 </head>
-<body data-ng-app="app" data-ng-controller="ApplicationCtrl">
-<div id="wrapper">
-  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-    <div data-ke-navbar-header></div>
-    <div data-ke-navbar-top-links></div>
-    <div data-ke-sidebar></div>
-  </nav>
-  <div id="page-wrapper" data-ke-wrapper data-ng-view></div>
-</div>
-<!-- /#wrapper -->
+<body data-ng-app="app">
+<div data-ng-view></div>
 
 <!-- Core Scripts - Include with every page -->
 <!-- build:js scripts/vendor.js -->
@@ -50,39 +42,41 @@
 
 <!-- build:js({.tmp,app}) scripts/scripts.js -->
 <script src="scripts/app.js"></script>
-<script src="scripts/common/common.js"></script>
+<script src="scripts/common/module.js"></script>
+<script src="scripts/common/services/access-token-service.js"></script>
+<script src="scripts/common/services/api-service.js"></script>
 <script src="scripts/common/services/authorization-service.js"></script>
 <script src="scripts/common/services/content-type.js"></script>
-<script src="scripts/common/services/date-formatter.js"></script>
-<script src="scripts/common/services/http-interceptor.js"></script>
-<script src="scripts/common/services/remove-alert.js"></script>
+<script src="scripts/common/services/endpoint-root.js"></script>
+<script src="scripts/common/services/error-handle-service.js"></script>
+<script src="scripts/common/services/format-date.js"></script>
+<script src="scripts/common/services/form-service.js"></script>
+<script src="scripts/common/services/redirect-service.js"></script>
+<script src="scripts/common/services/user-service.js"></script>
 <script src="scripts/common/directives/ke-collapse.js"></script>
-<script src="scripts/common/directives/ke-navbar-header.js"></script>
-<script src="scripts/common/directives/ke-navbar-top-links.js"></script>
+<script src="scripts/common/directives/ke-navbar.js"></script>
 <script src="scripts/common/directives/ke-side-menu.js"></script>
-<script src="scripts/common/directives/ke-sidebar.js"></script>
-<script src="scripts/common/directives/ke-wrapper.js"></script>
-<script src="scripts/common/controllers/application-controller.js"></script>
-<script src="scripts/common/controllers/dashboard-controller.js"></script>
-<script src="scripts/authentication/authentication.js"></script>
+<script src="scripts/authentication/module.js"></script>
 <script src="scripts/authentication/services/authentication-service.js"></script>
+<script src="scripts/authentication/services/resolvers/login.js"></script>
 <script src="scripts/authentication/controllers/login-controller.js"></script>
 <script src="scripts/authentication/controllers/logout-controller.js"></script>
-<script src="scripts/inventory/inventory.js"></script>
-<script src="scripts/inventory/services/inventory-service.js"></script>
-<script src="scripts/inventory/services/order-service.js"></script>
-<script src="scripts/inventory/services/parts-service.js"></script>
-<script src="scripts/inventory/services/product-service.js"></script>
-<script src="scripts/inventory/services/supplier-service.js"></script>
-<script src="scripts/inventory/directives/ke-inventory-table.js"></script>
-<script src="scripts/inventory/directives/ke-order-table.js"></script>
-<script src="scripts/inventory/directives/ke-parts-panels.js"></script>
-<script src="scripts/inventory/controllers/inventories-controller.js"></script>
-<script src="scripts/inventory/controllers/orders-controller.js"></script>
-<script src="scripts/inventory/controllers/parts-controller.js"></script>
-<script src="scripts/inventory/controllers/products-controller.js"></script>
-<script src="scripts/inventory/controllers/sidebar-controller.js"></script>
-<script src="scripts/inventory/controllers/suppliers-controller.js"></script>
+<script src="scripts/inventories/module.js"></script>
+<script src="scripts/inventories/services/inventory-service.js"></script>
+<script src="scripts/inventories/services/order-service.js"></script>
+<script src="scripts/inventories/services/parts-service.js"></script>
+<script src="scripts/inventories/services/product-service.js"></script>
+<script src="scripts/inventories/services/supplier-service.js"></script>
+<script src="scripts/inventories/services/resolvers/index.js"></script>
+<script src="scripts/inventories/services/resolvers/product.js"></script>
+<script src="scripts/inventories/services/resolvers/suppliers.js"></script>
+<script src="scripts/inventories/controllers/index-controller.js"></script>
+<script src="scripts/inventories/controllers/inventory-table-controller.js"></script>
+<script src="scripts/inventories/controllers/order-table-controller.js"></script>
+<script src="scripts/inventories/controllers/parts-panels-controller.js"></script>
+<script src="scripts/inventories/controllers/products-controller.js"></script>
+<script src="scripts/inventories/controllers/sidebar-controller.js"></script>
+<script src="scripts/inventories/controllers/suppliers-controller.js"></script>
 <!-- endbuild -->
 
 </body>

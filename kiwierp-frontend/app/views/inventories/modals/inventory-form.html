@@ -1,0 +1,24 @@
+<div class="modal-header">
+  <button type="button" class="close" data-ng-click="$dismiss()">&times;</button>
+  <h3>{{ inventoryFormHeader }}</h3>
+</div>
+<div class="modal-body">
+  <form role="form" name="inventoryForm">
+    <div class="form-group">
+      <label for="inventory-form-quantity">Quantity</label>
+      <input id="inventory-form-quantity" type="number" class="form-control" placeholder="Quantity" data-ng-model="inventoryFormInputs.quantity" required />
+    </div>
+    <div class="form-group">
+      <label for="inventory-form-description">Description</label>
+      <textarea id="inventory-form-description" class="form-control" rows="3" data-ng-model="inventoryFormInputs.description" data-ng-maxlength="500"></textarea>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-lg btn-success" data-ng-click="addInventory()" data-ng-if="isAddInventoryForm" data-ng-disabled="inventoryForm.$invalid">Create</button>
+  <div data-ng-if="!isAddInventoryForm">
+    <button type="button" class="btn btn-lg btn-danger" data-ng-click="removeInventoryAlert()">Remove</button>
+    or
+    <button type="button" class="btn btn-lg btn-primary" data-ng-click="editInventory()" data-ng-disabled="inventoryForm.$invalid">Update</button>
+  </div>
+</div>

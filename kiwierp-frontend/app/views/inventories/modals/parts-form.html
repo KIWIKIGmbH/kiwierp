@@ -1,0 +1,28 @@
+<div class="modal-header">
+  <button type="button" class="close" data-ng-click="$dismiss()">&times;</button>
+  <h3>{{ partsFormHeader }}</h3>
+</div>
+<div class="modal-body">
+  <form role="form" name="partsForm">
+    <div class="form-group">
+      <label for="parts-form-name">Parts Name</label>
+      <input id="parts-form-name" type="text" class="form-control" placeholder="Name" data-ng-model="partsFormInputs.name" required data-ng-minlength="1" data-ng-maxlength="120" />
+    </div>
+    <div class="form-group">
+      <label for="parts-form-needed-quantity">Number of Needed Parts per Product</label>
+      <input id="parts-form-needed-quantity" type="number" class="form-control" placeholder="Number of Parts per Product" required data-ng-model="partsFormInputs.neededQuantity" />
+    </div>
+    <div class="form-group">
+      <label for="parts-form-description">Description</label>
+      <textarea id="parts-form-description" class="form-control" rows="3" data-ng-model="partsFormInputs.description" data-ng-maxlength="500"></textarea>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-lg btn-success" data-ng-click="addParts()" data-ng-if="isAddPartsForm" data-ng-disabled="partsForm.$invalid">Create</button>
+  <div data-ng-if="!isAddPartsForm">
+    <button type="button" class="btn btn-lg btn-danger" data-ng-click="removePartsAlert()">Remove</button>
+    or
+    <button type="button" class="btn btn-lg btn-primary" data-ng-click="editParts()" data-ng-disabled="partsForm.$invalid">Update</button>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+<div class="modal-header">
+  <button type="button" class="close" data-ng-click="$dismiss()">&times;</button>
+  <h3>{{ productFormHeader }}</h3>
+</div>
+<div class="modal-body">
+  <form role="form" name="productForm">
+    <div class="form-group">
+      <label for="product-form-name">Product Name</label>
+      <input id="product-form-name" type="text" class="form-control" placeholder="Product Name" data-ng-model="productFormInputs.name" required data-ng-minlength="1" data-ng-maxlength="120" />
+    </div>
+    <div class="form-group">
+      <label for="product-form-description">Description</label>
+      <textarea id="product-form-description" class="form-control" rows="3" data-ng-model="productFormInputs.description" data-ng-maxlength="500"></textarea>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="submit" class="btn btn-lg btn-success" data-ng-click="addProduct()" data-ng-if="isAddProductForm" data-ng-disabled="productForm.$invalid">Create</button>
+  <div data-ng-if="!isAddProductForm">
+    <button type="button" class="btn btn-lg btn-danger" data-ng-click="removeProductAlert()">Remove</button>
+    or
+    <button type="button" class="btn btn-lg btn-primary" data-ng-click="editProduct()" data-ng-disabled="productForm.$invalid">Update</button>
+  </div>
+</div>

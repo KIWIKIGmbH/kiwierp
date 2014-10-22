@@ -1,0 +1,29 @@
+<div class="modal-header">
+  <button type="button" class="close" data-ng-click="$dismiss()">&times;</button>
+  <h3>Order Parts</h3>
+</div>
+<div class="modal-body">
+  <form role="form" name="orderForm">
+    <div class="form-group">
+      <label>Supplier</label>
+      <select data-ng-model="orderFormInputs.supplierId" required>
+        <option data-ng-repeat="supplier in suppliers" value="{{ supplier.id }}">{{ supplier.companyName }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="order-form-quantity">Order Quantity</label>
+      <input id="order-form-quantity" type="number" class="form-control" placeholder="Order Quantity" data-ng-model="orderFormInputs.quantity" required />
+    </div>
+    <div class="form-group">
+      <label for="order-form-ordered-date">Order Date</label>
+      <div id="order-form-ordered-date" data-ng-model="orderFormInputs.orderedDate" data-datepicker></div>
+    </div>
+    <div class="form-group">
+      <label for="order-form-ordered-time">Order Time</label>
+      <div id="order-form-ordered-time" data-ng-model="orderFormInputs.orderedDate" data-timepicker></div>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-lg btn-warning" data-ng-click="addOrder()" data-ng-disabled="orderForm.$invalid">Order</button>
+</div>

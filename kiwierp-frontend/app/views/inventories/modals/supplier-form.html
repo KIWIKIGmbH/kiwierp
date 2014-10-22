@@ -1,0 +1,28 @@
+<div class="modal-header">
+  <button type="button" class="close" data-ng-click="$dismiss()">&times;</button>
+  <h3>{{ supplierFormHeader }}</h3>
+</div>
+<div class="modal-body">
+  <form role="form" name="supplierForm">
+    <div class="form-group">
+      <label for="supplier-form-company-name">Company Name</label>
+      <input id="supplier-form-company-name" type="text" name="companyName" class="form-control" placeholder="Company Name" data-ng-model="supplierFormInputs.companyName" required data-ng-minlength="1" data-ng-maxlength="120" />
+    </div>
+    <div class="form-group">
+      <label for="supplier-form-personal-name">Personal Name</label>
+      <input id="supplier-form-personal-name" type="text" name="personalName" class="form-control" placeholder="Personal Name" data-ng-model="supplierFormInputs.personalName" required data-ng-minlength="1" data-ng-maxlength="120" />
+    </div>
+    <div class="form-group">
+      <label for="supplier-form-phone-number">Phone Number</label>
+      <input id="supplier-form-phone-number" type="tel" name="phoneNumber" class="form-control" placeholder="01234567890 (without hyphen)" data-ng-model="supplierFormInputs.phoneNumber" required data-ng-minlength="1" data-ng-maxlength="20" data-ng-pattern="/^[0-9]+$/" />
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-lg btn-success" data-ng-click="addSupplier()" data-ng-if="isAddSupplierForm" data-ng-disabled="supplierForm.$invalid">Create</button>
+  <div data-ng-if="!isAddSupplierForm">
+    <button type="button" class="btn btn-lg btn-danger" data-ng-click="removeSupplierAlert()">Remove</button>
+    or
+    <button type="button" class="btn btn-lg btn-primary" data-ng-click="editSupplier()" data-ng-disabled="supplierForm.$invalid">Update</button>
+  </div>
+</div>

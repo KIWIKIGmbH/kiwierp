@@ -1,0 +1,61 @@
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" data-ng-href="/">kiwierp</a>
+  </div>
+  <ul class="nav navbar-top-links navbar-right">
+    <li class="dropdown">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+      </a>
+      <ul class="dropdown-menu dropdown-user" >
+        <li data-ng-controller="LogoutCtrl">
+          <a href="" data-ng-click="logout()"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+        </li>
+        <!-- /.dropdown-user -->
+      </ul>
+    </li>
+    <!-- /.dropdown-user -->
+  </ul>
+  <div class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse" data-ke-collapse>
+      <ul class="nav" id="side-menu" data-ke-side-menu>
+        <li class="active" data-ng-controller="InventorySidebarCtrl">
+          <a href="#"><i class="fa fa-cubes fa-fw"></i> Inventory<span class="fa arrow"></span></a>
+          <ul class="nav nav-second-level" style="height: auto;">
+            <li>
+              <a data-ng-href="/inventories">All</a>
+            </li>
+            <li class="active">
+              <a href="#">Products<span class="fa arrow"></span></a>
+              <ul class="nav nav-third-level">
+                <li data-ng-repeat="product in products">
+                  <a data-ng-href="/inventories/{{ product.id }}">{{ product.name }}</a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a data-ng-href="/inventories/suppliers">Suppliers</a>
+            </li>
+            <li>
+              <a href="#">Config<span class="fa arrow"></span></a>
+              <ul class="nav nav-third-level">
+                <li>
+                  <a href data-ng-click="openAddProductForm()">Add Product</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <!-- /.nav-second-level -->
+        </li>
+      </ul>
+      <!-- /#side-menu -->
+    </div>
+    <!-- /.sidebar-collapse -->
+  </div>
+</nav>

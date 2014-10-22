@@ -70,13 +70,6 @@ module.exports = function (grunt) {
         livereload: 35729
       },
       livereload: {
-        // options: {
-        //   open: true,
-        //   base: [
-        //     '.tmp',
-        //     '<%= yeoman.app %>'
-        //   ]
-        // },
         options: {
           middleware: function(connect) {
             return [
@@ -238,13 +231,14 @@ module.exports = function (grunt) {
         options: {
           collapseWhitespace: true,
           collapseBooleanAttributes: true,
+          removeComments: true,
           removeCommentsFromCDATA: true,
           removeOptionalTags: true
         },
         files: [{
           expand: true,
           cwd: '<%= yeoman.dist %>',
-          src: ['*.html', 'views/{,*/}*.html'],
+          src: ['*.html', 'views/{*/,*/*/}*.html'],
           dest: '<%= yeoman.dist %>'
         }]
       }
@@ -264,13 +258,6 @@ module.exports = function (grunt) {
       }
     },
 
-    // Replace Google CDN references
-    cdnify: {
-      dist: {
-        html: ['<%= yeoman.dist %>/*.html']
-      }
-    },
-
     // Copies remaining files to places other tasks can use
     copy: {
       dist: {
@@ -283,15 +270,24 @@ module.exports = function (grunt) {
             '*.{ico,png,txt}',
             '.htaccess',
             '*.html',
-            'views/{,*/}*.html',
-            'images/{,*/}*.{webp}',
-            'fonts/*'
+            'views/{*/,*/*/}*.html',
+            'images/{,*/}*.{webp}'
           ]
         }, {
           expand: true,
           cwd: '.tmp/images',
           dest: '<%= yeoman.dist %>/images',
           src: ['generated/*']
+        }, {
+          expand: true,
+          cwd: '<%= yeoman.app %>/bower_components/bootstrap/dist/fonts',
+          dest: '<%= yeoman.dist %>/fonts',
+          src: ['*.*']
+        }, {
+          expand: true,
+          cwd: '<%= yeoman.app %>/bower_components/components-font-awesome/fonts',
+          dest: '<%= yeoman.dist %>/fonts',
+          src: ['*.*']
         }]
       },
       styles: {
@@ -390,7 +386,6 @@ module.exports = function (grunt) {
     'concat',
     'ngmin',
     'copy:dist',
-    'cdnify',
     'cssmin',
     'uglify',
     'rev',

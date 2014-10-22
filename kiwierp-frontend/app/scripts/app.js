@@ -10,9 +10,4 @@ angular.module('app', [
   'common',
   'authentication',
   'inventory'
-])
-  .config(['$locationProvider',
-    function ($locationProvider) {
-      $locationProvider.html5Mode(true);
-    }]);
-
+]);

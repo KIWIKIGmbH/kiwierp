@@ -1,26 +1,26 @@
 'use strict';
 
 angular.module('authentication.services')
-  .factory('authenticationService', ['$q', '$http', 'storage',
-    function ($q, $http, storage) {
-      var key = 'accessToken';
-
+  .factory('authenticationService', ['$http', 'endpointRoot', 'redirectService', 'accessTokenService',
+    function ($http, endpointRoot, redirectService, accessTokenService) {
       return {
         login: function (name, password) {
-          var url = '/api/v1/users/authentication';
+          var url = endpointRoot + '/users/authentication';
           var data = {
             name: name,
             password: password
           };
 
           return $http.post(url, data)
-            .success(function (response) {
-              storage.set(key, response);
+            .success(function (accessToken) {
+              accessTokenService.set(accessToken);
+              return redirectService.toIndexPage();
             });
         },
 
         logout: function () {
-          storage.remove(key);
+          accessTokenService.remove();
+          return redirectService.toLoginPage();
         }
       };
     }]);

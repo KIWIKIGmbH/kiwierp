@@ -1,22 +1,41 @@
-<div class="row">
-  <div class="col-md-4 col-md-offset-4">
-    <div class="login-panel panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Please Sign In</h3>
-      </div>
-      <div class="panel-body">
-        <form autocomplete="off">
-          <fieldset>
-            <div class="form-group">
-              <input type="text" class="form-control" placeholder="Name" data-ng-model="name">
+<div id="wrapper">
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" data-ng-href="/">kiwierp</a>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 col-md-offset-4">
+        <div class="login-panel panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Please Sign In</h3>
+          </div>
+          <div class="panel-body">
+            <div class="alert alert-danger alert-dismissable" data-ng-show="isLoginFailed">
+              <button class="close" aria-hidden="true" data-dismiss="alert" type="button">&times;</button>
+              Wrong Name or Password.
             </div>
-            <div class="form-group">
-              <input type="password" class="form-control" placeholder="Password" data-ng-model="password">
-            </div>
-            <!-- Change this to a button or input when using this as a form -->
-            <button type="submit" class="btn btn-lg btn-success btn-block" data-ng-click="login()">Login</button>
-          </fieldset>
-        </form>
+            <form autocomplete="off" name="loginForm">
+              <fieldset>
+                <div class="form-group">
+                  <input type="text" class="form-control" placeholder="Name" data-ng-model="name" required data-ng-minlength="1" data-ng-maxlength="60">
+                </div>
+                <div class="form-group">
+                  <input type="password" class="form-control" placeholder="Password" data-ng-model="password" required data-ng-minlength="1" data-ng-maxlength="60">
+                </div>
+                <!-- Change this to a button or input when using this as a form -->
+                <button type="submit" class="btn btn-lg btn-success btn-block" data-ng-click="login()" data-ng-disabled="loginForm.$invalid">Login</button>
+              </fieldset>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   </div>
