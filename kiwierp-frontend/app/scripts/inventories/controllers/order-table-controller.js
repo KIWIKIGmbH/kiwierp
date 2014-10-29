@@ -34,7 +34,7 @@ angular.module('inventory.controllers')
         $scope.removeOrderAlert = function () {
           var removeAlertInstance = null;
 
-          removeAlertInstance.close();
+          modalInstance.close();
 
           $scope.removeAlertMessage = 'Are you sure to remove the order?';
 
@@ -46,7 +46,7 @@ angular.module('inventory.controllers')
               });
           };
 
-          modalInstance = formService.openRemoveAlert($scope);
+          removeAlertInstance = formService.openRemoveAlert($scope);
         };
 
         modalInstance = formService.openForm({
