@@ -12,11 +12,9 @@ trait AddAccessUser {
 
   this: User =>
 
-  def checkUserType(userType: String): Unit = {
-    userType match {
-      case "admin" | "user" | "guest" => ()
-      case _ => throw new InvalidRequest
-    }
+  def checkUserType(userType: String) = userType match {
+    case "admin" | "user" | "guest" => ()
+    case _ => throw new InvalidRequest
   }
 
   def checkUserNotExist(name: String)(implicit s: AsyncDBSession): Future[Unit] =

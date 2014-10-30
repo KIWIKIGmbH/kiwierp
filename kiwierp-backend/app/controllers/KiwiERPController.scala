@@ -71,7 +71,8 @@ trait KiwiERPController extends Controller {
 
     def bindFromRequestAndCheckErrors(success: T => Future[Result])
                                      (implicit req: Request[FormUrlEncoded]): Future[Result] = {
-      val hasErrors: Form[T] => Future[Result] = ef => KiwiERPError.futureResult(new InvalidRequest)
+      val hasErrors: Form[T] => Future[Result] =
+        (ef) => KiwiERPError.futureResult(new InvalidRequest)
 
       self.bindFromRequest.fold(hasErrors, success)
     }
