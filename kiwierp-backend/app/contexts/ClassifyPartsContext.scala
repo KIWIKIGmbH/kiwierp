@@ -7,7 +7,9 @@ import scalikejdbc.async.{AsyncDB, AsyncDBSession}
 
 import scala.concurrent.Future
 
-class ClassifyPartsContext private (parts: Parts, classifiedQuantity: Int)(implicit tx: AsyncDBSession) {
+class ClassifyPartsContext private
+(parts: Parts,
+ classifiedQuantity: Int)(implicit tx:AsyncDBSession) {
 
   private val classifiedParts = new Parts(parts) with ClassifiedParts
 
@@ -30,15 +32,20 @@ object ClassifyPartsContext extends KiwiERPContext {
     AsyncDB localTx { implicit tx =>
       Inventory.findWithParts(inventoryId, id) flatMap { inventory =>
         val parts = inventory.parts.get
+        val cxt = new ClassifyPartsContext(parts, classifiedQuantity)
 
-        new ClassifyPartsContext(parts, classifiedQuantity).classify(inventory)
+        cxt.classify(inventory)
       }
     }
 
-  def apply(id: Long, classifiedQuantity: Int, inventoryDescription: Option[String]): Future[Inventory] =
+  def apply(id: Long,
+            classifiedQuantity: Int,
+            inventoryDescription: Option[String]): Future[Inventory] =
     AsyncDB localTx { implicit tx =>
       Parts.find(id) flatMap { parts =>
-        new ClassifyPartsContext(parts, classifiedQuantity).classifyAndCreateInventory(inventoryDescription)
+        val cxt = new ClassifyPartsContext(parts, classifiedQuantity)
+
+        cxt.classifyAndCreateInventory(inventoryDescription)
       }
     }
 

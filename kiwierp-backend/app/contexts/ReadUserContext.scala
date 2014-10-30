@@ -23,7 +23,9 @@ object ReadUserContext {
 
   def apply[A](id: Long, optAccess: Option[User]): Future[User] = AsyncDB withPool { implicit s =>
     User.find(id) map { user =>
-      new ReadUserContext(user, optAccess.get).read()
+      val cxt = new ReadUserContext(user, optAccess.get)
+
+      cxt.read()
     }
   }
 

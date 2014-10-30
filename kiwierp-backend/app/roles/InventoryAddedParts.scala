@@ -9,7 +9,8 @@ trait InventoryAddedParts {
 
   this: Parts =>
 
-  def addInventory(description: Option[String], quantity: Int)(implicit s: AsyncDBSession): Future[Inventory] =
+  def addInventory(description: Option[String], quantity: Int)
+                  (implicit s: AsyncDBSession): Future[Inventory] =
     Inventory.create(id, description, quantity)
 
 }

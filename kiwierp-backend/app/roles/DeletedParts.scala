@@ -13,6 +13,7 @@ trait DeletedParts {
   def deleteInventories(deletedAt: DateTime)(implicit s: AsyncDBSession): Future[Int] =
     Inventory.destroyAllByPartsId(id, deletedAt)
 
-  def deleted(deletedAt: DateTime)(implicit s: AsyncDBSession): Future[Int] = Parts.destroy(id, deletedAt)
+  def deleted(deletedAt: DateTime)(implicit s: AsyncDBSession): Future[Int] =
+    Parts.destroy(id, deletedAt)
 
 }

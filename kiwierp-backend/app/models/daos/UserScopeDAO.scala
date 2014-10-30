@@ -31,13 +31,14 @@ trait UserScopeDAO extends KiwiERPDAO[UserScope] {
 
   val ut = s
 
-  def findScope(userType: String, method: String, uri: String)(implicit s: ADS = AsyncDB.sharedSession): Future[UserScope] =
-    withSQL {
-      selectFrom(UserScope as ut)
-        .where.append(sqls"$userType = ANY (ut.permitted_user_types)")
-        .and.eq(ut.method, method)
-        .and.eq(ut.uri, uri)
-        .and.append(isNotDeleted)
-    } mapSingleFuture apply(ut)
+  def findScope(userType: String,
+                method: String,
+                uri: String)(implicit s: ADS = AsyncDB.sharedSession): Future[UserScope] = withSQL {
+    selectFrom(UserScope as ut)
+      .where.append(sqls"$userType = ANY (ut.permitted_user_types)")
+      .and.eq(ut.method, method)
+      .and.eq(ut.uri, uri)
+      .and.append(isNotDeleted)
+  } mapSingleFuture apply(ut)
 
 }

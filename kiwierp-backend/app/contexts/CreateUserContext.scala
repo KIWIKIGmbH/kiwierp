@@ -8,7 +8,11 @@ import utils.Password
 
 import scala.concurrent.Future
 
-class CreateUserContext (name: String, password: Password, userType: String, user: User)(implicit s: AsyncDBSession) {
+class CreateUserContext
+(name: String,
+ password: Password,
+ userType: String,
+ user: User)(implicit s: AsyncDBSession) {
 
   private def create(): Future[User] = {
     val addAccessUser = new User(user) with AddAccessUser
@@ -24,8 +28,12 @@ class CreateUserContext (name: String, password: Password, userType: String, use
 
 object CreateUserContext extends KiwiERPContext {
 
-  def apply(name: String, password: String, userType: String, optUser: Option[User]): Future[User] = AsyncDB withPool { implicit s =>
-    new CreateUserContext(name, new Password(password), userType, optUser.get).create()
-  }
+  def apply(name: String, password: String, userType: String, optUser: Option[User]): Future[User] =
+    AsyncDB withPool { implicit s =>
+      val user = optUser.get
+      val cxt = new CreateUserContext(name, new Password(password), userType, user)
+
+      cxt.create()
+    }
 
 }

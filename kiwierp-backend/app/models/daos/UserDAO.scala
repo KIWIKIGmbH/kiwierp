@@ -56,22 +56,24 @@ trait UserDAO extends KiwiERPDAO[User] {
     }
   }
 
-  def save(id: Long)(name: String, userType: String)(implicit s: ADS = AsyncDB.sharedSession): Future[Int] =
-    updateFutureOrNotFound {
-      update(User)
-        .set(
-          column.name -> name,
-          column.userType -> userType,
-          column.updatedAt -> DateTime.now
-        )
-        .where.eq(column.id, id)
-        .and.isNull(column.deletedAt)
-    }
+  def save(id: Long)
+          (name: String, userType: String)
+          (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFutureOrNotFound {
+    update(User)
+      .set(
+        column.name -> name,
+        column.userType -> userType,
+        column.updatedAt -> DateTime.now
+      )
+      .where.eq(column.id, id)
+      .and.isNull(column.deletedAt)
+  }
 
-  def findByName(name: String)(implicit s: ADS = AsyncDB.sharedSession): Future[Option[User]] = withSQL {
-    selectFrom(User as u)
-      .where.eq(u.name, name)
-      .and.append(isNotDeleted)
-  }.map(apply(u)).single().future
+  def findByName(name: String)(implicit s: ADS = AsyncDB.sharedSession): Future[Option[User]] =
+    withSQL {
+      selectFrom(User as u)
+        .where.eq(u.name, name)
+        .and.append(isNotDeleted)
+    }.map(apply(u)).single().future
 
 }

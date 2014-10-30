@@ -9,7 +9,8 @@ trait KiwiERPJson[M] {
 
   def dateTimeToString(dateTime: DateTime): String = dateTime.toString(DATETIME_PATTERN)
 
-  def optDateTimeToString(optDateTime: Option[DateTime]): Option[String] = optDateTime map dateTimeToString
+  def optDateTimeToString(optDateTime: Option[DateTime]): Option[String] =
+    optDateTime map dateTimeToString
 
   def base(m: M): JsObject
 

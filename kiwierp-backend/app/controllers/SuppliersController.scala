@@ -8,7 +8,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 object SuppliersController extends KiwiERPController {
 
-  def index = AuthorizedAction.async { implicit req =>
+  def list = AuthorizedAction.async { implicit req =>
     Page(Supplier.findAll) map { results =>
       val (suppliers, page) = results
 

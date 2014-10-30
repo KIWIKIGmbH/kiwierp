@@ -38,7 +38,10 @@ trait AccessTokenDAO extends KiwiERPDAO[AccessToken] {
 
   private val u = User.u
 
-  def create(token: String, userId: Long, expiresIn: Int, tokenType: String)(implicit s: ADS = AsyncDB.sharedSession): Future[AccessToken] = {
+  def create(token: String,
+             userId: Long,
+             expiresIn: Int,
+             tokenType: String)(implicit s: ADS = AsyncDB.sharedSession): Future[AccessToken] = {
     val createdAt = DateTime.now
 
     updateFuture {
@@ -55,7 +58,8 @@ trait AccessTokenDAO extends KiwiERPDAO[AccessToken] {
     }
   }
 
-  def findWithUserByToken(token: String)(implicit s: ADS = AsyncDB.sharedSession): Future[AccessToken] = withSQL {
+  def findWithUserByToken(token: String)
+                         (implicit s: ADS = AsyncDB.sharedSession): Future[AccessToken] = withSQL {
     selectFrom[AccessToken](AccessToken as a)
       .innerJoin(User as u).on(
         sqls
@@ -64,7 +68,8 @@ trait AccessTokenDAO extends KiwiERPDAO[AccessToken] {
       .where.eq(a.token, token)
   } mapSingleFuture apply(a, u)
 
-  def destroyByUserId(userId: Long)(implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
+  def destroyByUserId(userId: Long)
+                     (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
     deleteFrom(AccessToken)
       .where.eq(column.userId, userId)
   }

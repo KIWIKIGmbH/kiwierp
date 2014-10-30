@@ -19,11 +19,14 @@ trait AddAccessUser {
     }
   }
 
-  def checkUserNotExist(name: String)(implicit s: AsyncDBSession): Future[Unit] = User.findByName(name) map { optUser =>
-    if (optUser.isDefined) throw new InvalidRequest else ()
-  }
+  def checkUserNotExist(name: String)(implicit s: AsyncDBSession): Future[Unit] =
+    User.findByName(name) map { optUser =>
+      if (optUser.isDefined) throw new InvalidRequest
+    }
 
-  def create(name: String, password: Password, userType: String)(implicit s: AsyncDBSession): Future[User] =
+  def create(name: String,
+             password: Password,
+             userType: String)(implicit s: AsyncDBSession): Future[User] =
     User.create(name, password.cryptPassword, userType)
 
 }

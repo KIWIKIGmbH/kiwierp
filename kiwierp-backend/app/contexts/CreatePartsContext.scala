@@ -8,7 +8,11 @@ import utils.exceptions.InvalidRequest
 
 import scala.concurrent.Future
 
-class CreatePartsContext private (product: Product, name: String, description: Option[String], neededQuantity: Int)(implicit s: AsyncDBSession) {
+class CreatePartsContext private
+(product: Product,
+ name: String,
+ description: Option[String],
+ neededQuantity: Int)(implicit s: AsyncDBSession) {
 
   private def create(): Future[Parts] = {
     val partsAddedProduct = new Product(product) with PartsAddedProduct
@@ -20,11 +24,15 @@ class CreatePartsContext private (product: Product, name: String, description: O
 
 object CreatePartsContext extends KiwiERPContext {
 
-  def apply(productId: Long, name: String, description: Option[String], neededQuantity: Int): Future[Parts] =
-    AsyncDB withPool { implicit s =>
-      Product.find(productId) recover handleNotFound(new InvalidRequest) flatMap { product =>
-        new CreatePartsContext(product, name, description, neededQuantity).create()
-      }
-    }
+  def apply(productId: Long,
+            name: String,
+            description: Option[String],
+            neededQuantity: Int): Future[Parts] = AsyncDB withPool { implicit s =>
+    Product.find(productId) flatMap { product =>
+      val cxt = new CreatePartsContext(product, name, description, neededQuantity)
+
+      cxt.create()
+    } recover handleNotFound(new InvalidRequest)
+  }
 
 }

@@ -26,11 +26,14 @@ trait KiwiERPDAO[A] extends SQLSyntaxSupport[A] {
 
   def apply(a: SyntaxProvider[A])(rs: WRS): A = apply(a.resultName)(rs)
 
-  def opt(a: SyntaxProvider[A])(rs: WRS): Option[A] = rs.longOpt(a.resultName.id) map (_ => apply(a.resultName)(rs))
+  def opt(a: SyntaxProvider[A])(rs: WRS): Option[A] = rs.longOpt(a.resultName.id) map { _ =>
+    apply(a.resultName)(rs)
+  }
 
   def getOrNotFound(optA: Option[A]): A = optA getOrElse (throw new ResourceNotFound)
 
-  def findAll(page: Int = DEFAULT_PAGE)(implicit session: ADS = AsyncDB.sharedSession): Future[List[A]] = withSQL {
+  def findAll(page: Int = DEFAULT_PAGE)
+             (implicit session: ADS = AsyncDB.sharedSession): Future[List[A]] = withSQL {
     selectFrom(as(s))
       .where.append(isNotDeleted)
       .orderBy(s.id)
@@ -44,41 +47,45 @@ trait KiwiERPDAO[A] extends SQLSyntaxSupport[A] {
       .and.append(isNotDeleted)
   } mapSingleFuture apply(s)
 
-  def destroy(id: Long, deletedAt: DateTime = DateTime.now)(implicit s: ADS = AsyncDB.sharedSession): Future[Int] =
-    updateFutureOrNotFound {
-      update(this)
-        .set(
-          column.deletedAt -> deletedAt
-        )
-        .where.eq(column.id, id)
-        .and.isNull(column.deletedAt)
-    }
+  def destroy(id: Long, deletedAt: DateTime = DateTime.now)
+             (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = pdateFutureOrNotFound {
+    update(this)
+      .set(
+        column.deletedAt -> deletedAt
+      )
+      .where.eq(column.id, id)
+      .and.isNull(column.deletedAt)
+  }
 
   implicit class SQLFuture(self: SQL[_, NoExtractor]) {
 
-    def mapSingleFuture(f: WRS => A)(implicit session: ADS): Future[A] = self.map(f).single().future map getOrNotFound
+    def mapSingleFuture(f: WRS => A)(implicit session: ADS): Future[A] =
+      self.map(f).single().future map getOrNotFound
 
-    def mapListFuture(f: WRS => A)(implicit session: ADS): Future[List[A]] = self.map(f).list().future
+    def mapListFuture(f: WRS => A)(implicit session: ADS): Future[List[A]] =
+      self.map(f).list().future
 
   }
 
   object updateFutureAndReturnGeneratedKey {
 
-    def apply(sql: => SQLBuilder[_])(implicit session: ADS): Future[Long] = withSQL(sql).updateAndReturnGeneratedKey().future
+    def apply(sql: => SQLBuilder[_])(implicit session: ADS): Future[Long] =
+      withSQL(sql).updateAndReturnGeneratedKey().future
 
   }
 
   object updateFutureOrNotFound {
 
-    def apply(sql: => SQLBuilder[_])(implicit session: ADS): Future[Int] = updateFuture(sql) map { updatedNum =>
-      val SUCCESS = 1
-      val FAILURE = 0
+    def apply(sql: => SQLBuilder[_])(implicit session: ADS): Future[Int] =
+      updateFuture(sql) map { updatedNum =>
+        val SUCCESS = 1
+        val FAILURE = 0
 
-      updatedNum match {
-        case SUCCESS => updatedNum
-        case FAILURE => throw new ResourceNotFound
+        updatedNum match {
+          case SUCCESS => updatedNum
+          case FAILURE => throw new ResourceNotFound
+        }
       }
-    }
 
   }
 

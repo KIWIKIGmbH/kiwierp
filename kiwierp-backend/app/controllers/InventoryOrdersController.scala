@@ -10,7 +10,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 object InventoryOrdersController extends KiwiERPController {
 
-  def index = AuthorizedAction.async { implicit req =>
+  def list = AuthorizedAction.async { implicit req =>
     req.getQueryString("partsId") filter isId map { partsIdStr =>
       Page(InventoryOrder.findAllByPartsId(partsIdStr.toLong))
     } getOrElse {
@@ -34,7 +34,12 @@ object InventoryOrdersController extends KiwiERPController {
       )(CreateForm.apply)(CreateForm.unapply))
 
     form.bindFromRequestAndCheckErrors { f =>
-      CreateInventoryOrderContext(f.partsId, f.supplierId, f.quantity, f.orderedDate) map { inventoryOrder =>
+      CreateInventoryOrderContext(
+        f.partsId,
+        f.supplierId,
+        f.quantity,
+        f.orderedDate
+      ) map { inventoryOrder =>
         CreatedWithLocation(InventoryOrderJson.create(inventoryOrder))
       }
     }

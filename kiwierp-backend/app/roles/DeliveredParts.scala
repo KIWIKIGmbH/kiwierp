@@ -9,7 +9,8 @@ trait DeliveredParts {
 
   this: Parts =>
 
-  def archive(deliveredInventoryOrder: InventoryOrder with DeliveredInventoryOrder)(implicit s: AsyncDBSession): Future[Int] =
+  def archive(deliveredInventoryOrder: InventoryOrder with DeliveredInventoryOrder)
+             (implicit s: AsyncDBSession): Future[Int] =
     Parts.updateUnclassifiedQuantity(id)(deliveredInventoryOrder.quantity + unclassifiedQuantity)
 
 }

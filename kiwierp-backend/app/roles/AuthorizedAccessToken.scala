@@ -7,6 +7,6 @@ trait AuthorizedAccessToken {
 
   this: AccessToken =>
 
-  def checkExpiration(): Unit = if (isExpired) throw new ExpiredToken
+  def checkExpiration() = if (isExpired) throw new ExpiredToken
 
 }

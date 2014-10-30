@@ -9,7 +9,10 @@ import utils.exceptions.InvalidToken
 
 import scala.concurrent.Future
 
-class AuthorizationContext private (accessToken: AccessToken, user: User, route: Route)(implicit s: AsyncDBSession) {
+class AuthorizationContext private
+(accessToken: AccessToken,
+ user: User,
+ route: Route)(implicit s: AsyncDBSession) {
 
   private def authorize(): Future[Unit] = {
     val authorizedUser = new User(user) with AuthorizedUser
@@ -23,12 +26,14 @@ class AuthorizationContext private (accessToken: AccessToken, user: User, route:
 
 object AuthorizationContext extends KiwiERPContext {
 
-  def apply[A](token: String, method: String, path: String): Future[AccessToken] = AsyncDB withPool { implicit s =>
-    AccessToken.findWithUserByToken(token) recover handleNotFound(new InvalidToken) flatMap { accessToken =>
-      val user = accessToken.user.get
+  def apply[A](token: String, method: String, path: String): Future[AccessToken] =
+    AsyncDB withPool { implicit s =>
+      AccessToken.findWithUserByToken(token) flatMap { accessToken =>
+        val user = accessToken.user.get
+        val cxt = new AuthorizationContext(accessToken, user, new Route(method, path))
 
-      new AuthorizationContext(accessToken, user, new Route(method, path)).authorize() map (_ => accessToken)
+        cxt.authorize() map (_ => accessToken)
+      } recover handleNotFound(new InvalidToken)
     }
-  }
 
 }

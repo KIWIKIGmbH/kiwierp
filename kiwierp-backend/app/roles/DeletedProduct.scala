@@ -23,6 +23,7 @@ trait DeletedProduct {
     }
   }
 
-  def deleted(deletedAt: DateTime)(implicit s: AsyncDBSession): Future[Int] = Product.destroy(id, deletedAt)
+  def deleted(deletedAt: DateTime)(implicit s: AsyncDBSession): Future[Int] =
+    Product.destroy(id, deletedAt)
 
 }

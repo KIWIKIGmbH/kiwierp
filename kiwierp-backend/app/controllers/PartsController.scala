@@ -10,7 +10,7 @@ import utils.exceptions.InvalidRequest
 
 object PartsController extends KiwiERPController {
 
-  def index = AuthorizedAction.async { implicit req =>
+  def list = AuthorizedAction.async { implicit req =>
     req.getQueryString("productId") filter isId map { productIdStr =>
       val productId = productIdStr.toLong
 
@@ -24,7 +24,11 @@ object PartsController extends KiwiERPController {
 
 
   def create = AuthorizedAction.async(parse.urlFormEncoded) { implicit req =>
-    case class CreateForm(productId: Long, name: String, description: Option[String], neededQuantity: Int)
+    case class CreateForm
+    (productId: Long,
+     name: String,
+     description: Option[String],
+     neededQuantity: Int)
 
     val form = Form(
       mapping(
@@ -67,7 +71,10 @@ object PartsController extends KiwiERPController {
   }
 
   def classify(id: Long) = AuthorizedAction.async(parse.urlFormEncoded) { implicit req =>
-    case class ClassifyForm(classifiedQuantity: Int, inventoryId: Option[Long], inventoryDescription: Option[String])
+    case class ClassifyForm
+    (classifiedQuantity: Int,
+     inventoryId: Option[Long],
+     inventoryDescription: Option[String])
 
     val form = Form(
       mapping(

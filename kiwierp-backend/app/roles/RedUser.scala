@@ -7,7 +7,7 @@ trait RedUser {
 
   this: User =>
 
-  def checkPermission(readAccessUser: User with ReadAccessUser): Unit =
+  def checkPermission(readAccessUser: User with ReadAccessUser) =
     if (!readAccessUser.hasPermission(id)) throw new AccessForbidden
 
 }

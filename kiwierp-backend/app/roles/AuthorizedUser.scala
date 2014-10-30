@@ -17,7 +17,7 @@ trait AuthorizedUser {
       case e: ResourceNotFound => throw new AccessForbidden
     }
 
-    UserScope.findScope(userType, route.method, route.uri) recover handleNotFound map (_ => ())
+    UserScope.findScope(userType, route.method, route.uri) map (_ => ()) recover handleNotFound
   }
 
 }

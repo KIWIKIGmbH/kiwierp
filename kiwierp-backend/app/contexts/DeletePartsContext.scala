@@ -8,7 +8,9 @@ import scalikejdbc.async.{AsyncDB, AsyncDBSession}
 
 import scala.concurrent.Future
 
-class DeletePartsContext private (parts: Parts, deletedAt: DateTime = DateTime.now)(implicit tx: AsyncDBSession) {
+class DeletePartsContext private
+(parts: Parts,
+ deletedAt: DateTime = DateTime.now)(implicit tx: AsyncDBSession) {
 
   private def delete(): Future[Int] = {
     val deletedParts = new Parts(parts) with DeletedParts
@@ -24,7 +26,9 @@ object DeletePartsContext {
 
   def apply(id: Long): Future[Int] = AsyncDB localTx { implicit tx =>
     Parts.find(id) flatMap { parts =>
-      new DeletePartsContext(parts).delete()
+      val cxt = new DeletePartsContext(parts)
+
+      cxt.delete()
     }
   }
 

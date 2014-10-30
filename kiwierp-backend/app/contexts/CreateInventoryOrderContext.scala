@@ -9,7 +9,11 @@ import utils.exceptions.InvalidRequest
 
 import scala.concurrent.Future
 
-class CreateInventoryOrderContext private (parts: Parts, supplier: Supplier, quantity: Int, orderedDate: DateTime)(implicit s: AsyncDBSession) {
+class CreateInventoryOrderContext private
+(parts: Parts,
+ supplier: Supplier,
+ quantity: Int,
+ orderedDate: DateTime)(implicit s: AsyncDBSession) {
 
   private def create(): Future[InventoryOrder] = {
     val orderedParts = new Parts(parts) with OrderedParts
@@ -22,13 +26,17 @@ class CreateInventoryOrderContext private (parts: Parts, supplier: Supplier, qua
 
 object CreateInventoryOrderContext extends KiwiERPContext {
 
-  def apply(partsId: Long, supplierId: Long, quantity: Int, orderedDate: DateTime): Future[InventoryOrder] =
-    AsyncDB withPool { implicit s =>
-      Parts.find(partsId) recover handleNotFound(new InvalidRequest) flatMap { parts =>
-        Supplier.find(supplierId) recover handleNotFound(new InvalidRequest) flatMap { supplier =>
-          new CreateInventoryOrderContext(parts, supplier, quantity, orderedDate).create()
-        }
+  def apply(partsId: Long,
+            supplierId: Long,
+            quantity: Int,
+            orderedDate: DateTime): Future[InventoryOrder] = AsyncDB withPool { implicit s =>
+    Parts.find(partsId) flatMap { parts =>
+      Supplier.find(supplierId) flatMap { supplier =>
+        val cxt = new CreateInventoryOrderContext(parts, supplier, quantity, orderedDate)
+
+        cxt.create()
       }
-    }
+    } recover handleNotFound(new InvalidRequest)
+  }
 
 }

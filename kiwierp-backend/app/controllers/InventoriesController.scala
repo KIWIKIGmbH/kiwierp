@@ -10,7 +10,7 @@ import utils.exceptions.InvalidRequest
 
 object InventoriesController extends KiwiERPController {
 
-  def index = AuthorizedAction.async { implicit req =>
+  def list = AuthorizedAction.async { implicit req =>
     req.getQueryString("partsId") filter isId map { partsIdStr =>
       val partsId = partsIdStr.toLong
 

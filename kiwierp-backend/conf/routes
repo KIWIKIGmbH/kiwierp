@@ -1,5 +1,5 @@
 # Users
-GET           /users                           controllers.UsersController.index
+GET           /users                           controllers.UsersController.list
 POST          /users                           controllers.UsersController.create
 GET           /users/:id                       controllers.UsersController.read(id: Long)
 PATCH         /users/:id                       controllers.UsersController.update(id: Long)
@@ -7,14 +7,14 @@ DELETE        /users/:id                       controllers.UsersController.delet
 POST          /users/authentication            controllers.UsersController.authenticate
 
 # Products
-GET           /products                        controllers.ProductsController.index
+GET           /products                        controllers.ProductsController.list
 POST          /products                        controllers.ProductsController.create
 GET           /products/:id                    controllers.ProductsController.read(id: Long)
 PATCH         /products/:id                    controllers.ProductsController.update(id: Long)
 DELETE        /products/:id                    controllers.ProductsController.delete(id: Long)
 
 # Parts
-GET           /parts                           controllers.PartsController.index
+GET           /parts                           controllers.PartsController.list
 POST          /parts                           controllers.PartsController.create
 GET           /parts/:id                       controllers.PartsController.read(id: Long)
 PATCH         /parts/:id                       controllers.PartsController.update(id: Long)
@@ -22,21 +22,21 @@ DELETE        /parts/:id                       controllers.PartsController.delet
 POST          /parts/:id/classification        controllers.PartsController.classify(id: Long)
 
 # Suppliers
-GET           /suppliers                       controllers.SuppliersController.index
+GET           /suppliers                       controllers.SuppliersController.list
 POST          /suppliers                       controllers.SuppliersController.create
 GET           /suppliers/:id                   controllers.SuppliersController.read(id: Long)
 PATCH         /suppliers/:id                   controllers.SuppliersController.update(id: Long)
 DELETE        /suppliers/:id                   controllers.SuppliersController.delete(id: Long)
 
 # Inventories
-GET           /inventories                     controllers.InventoriesController.index
+GET           /inventories                     controllers.InventoriesController.list
 POST          /inventories                     controllers.InventoriesController.create
 GET           /inventories/:id                 controllers.InventoriesController.read(id: Long)
 PATCH         /inventories/:id                 controllers.InventoriesController.update(id: Long)
 DELETE        /inventories/:id                 controllers.InventoriesController.delete(id: Long)
 
 # InventoryOrders
-GET           /inventoryorders                 controllers.InventoryOrdersController.index
+GET           /inventoryorders                 controllers.InventoryOrdersController.list
 POST          /inventoryorders                 controllers.InventoryOrdersController.create
 GET           /inventoryorders/:id             controllers.InventoryOrdersController.read(id: Long)
 PATCH         /inventoryorders/:id             controllers.InventoryOrdersController.update(id: Long)

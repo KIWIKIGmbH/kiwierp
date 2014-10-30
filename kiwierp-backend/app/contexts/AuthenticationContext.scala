@@ -22,12 +22,14 @@ class AuthenticationContext private (user: User, password: Password)(implicit tx
 
 object AuthenticationContext extends KiwiERPContext {
 
-  def apply(name: String, password: String): Future[AccessToken] =
-    AsyncDB localTx { implicit tx =>
-      User.findByName(name) flatMap {
-        case Some(user) => new AuthenticationContext(user, new Password(password)).authenticate()
-        case None => throw new InvalidUser
-      }
+  def apply(name: String, password: String): Future[AccessToken] = AsyncDB localTx { implicit tx =>
+    User.findByName(name) flatMap {
+      case Some(user) =>
+        val cxt = new AuthenticationContext(user, new Password(password))
+
+        cxt.authenticate()
+      case None => throw new InvalidUser
     }
+  }
 
 }

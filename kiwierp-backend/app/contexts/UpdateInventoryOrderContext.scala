@@ -9,7 +9,8 @@ import utils.exceptions.InvalidRequest
 
 import scala.concurrent.Future
 
-class UpdateInventoryOrderContext private (inventoryOrder: InventoryOrder)(implicit s: AsyncDBSession) {
+class UpdateInventoryOrderContext private
+(inventoryOrder: InventoryOrder)(implicit s: AsyncDBSession) {
 
   private def ship(shippedDate: DateTime): Future[Int] = {
     val shippedInventoryOrder = new InventoryOrder(inventoryOrder) with ShippedInventoryOrder
@@ -35,14 +36,17 @@ object UpdateInventoryOrderContext extends KiwiERPContext {
   def apply(id: Long, status: String, statusChangedDate: DateTime): Future[Int] = status match {
     case "shipped" => AsyncDB withPool { implicit s =>
       InventoryOrder.find(id) flatMap { inventoryOrder =>
-        new UpdateInventoryOrderContext(inventoryOrder).ship(statusChangedDate)
+        val cxt = new UpdateInventoryOrderContext(inventoryOrder)
+
+        cxt.ship(statusChangedDate)
       }
     }
     case "delivered" => AsyncDB localTx { implicit tx =>
       InventoryOrder.findWithParts(id) flatMap { inventoryOrder =>
         val parts = inventoryOrder.parts.get
+        val cxt = new UpdateInventoryOrderContext(inventoryOrder)
 
-        new UpdateInventoryOrderContext(inventoryOrder).deliver(parts, statusChangedDate)
+        cxt.deliver(parts, statusChangedDate)
       }
     }
     case _ => throw new InvalidRequest

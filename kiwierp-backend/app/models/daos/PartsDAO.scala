@@ -43,7 +43,10 @@ trait PartsDAO extends KiwiERPDAO[Parts] {
 
   private val i = Inventory.i
 
-  def create(productId: Long, name: String, description: Option[String], neededQuantity: Int)(implicit s: ADS = AsyncDB.sharedSession): Future[Parts] = {
+  def create(productId: Long,
+             name: String,
+             description: Option[String],
+             neededQuantity: Int)(implicit s: ADS = AsyncDB.sharedSession): Future[Parts] = {
     val NOTHING_UNCLASSIFIED = 0
     val createdAt = DateTime.now
     val updatedAt = createdAt
@@ -65,7 +68,8 @@ trait PartsDAO extends KiwiERPDAO[Parts] {
     }
   }
 
-  def findAllByProductId(productId: Long)(page: Int = DEFAULT_PAGE)
+  def findAllByProductId(productId: Long)
+                        (page: Int = DEFAULT_PAGE)
                         (implicit s: ADS = AsyncDB.sharedSession): Future[List[Parts]] = withSQL {
     selectFrom(Parts as pa)
       .where.eq(pa.productId, productId)
@@ -75,7 +79,8 @@ trait PartsDAO extends KiwiERPDAO[Parts] {
       .offset((page - 1) * DEFAULT_LIMIT)
   } mapListFuture apply(pa)
 
-  def save(id: Long)(name: String, description: Option[String], neededQuantity: Int)
+  def save(id: Long)
+          (name: String, description: Option[String], neededQuantity: Int)
           (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFutureOrNotFound {
     update(Parts)
       .set(
@@ -88,7 +93,9 @@ trait PartsDAO extends KiwiERPDAO[Parts] {
       .and.isNull(column.deletedAt)
   }
 
-  def updateUnclassifiedQuantity(id: Long)(unclassifiedQuantity: Int)(implicit s: ADS = AsyncDB.sharedSession): Future[Int] =
+  def updateUnclassifiedQuantity(id: Long)
+                                (unclassifiedQuantity: Int)
+                                (implicit s: ADS = AsyncDB.sharedSession): Future[Int] =
     updateFuture {
       update(Parts)
         .set(
@@ -98,14 +105,14 @@ trait PartsDAO extends KiwiERPDAO[Parts] {
         .and.isNull(column.deletedAt)
     }
 
-  def destroyAllByProductId(productId: Long, deletedAt: DateTime = DateTime.now)(implicit s: ADS = AsyncDB.sharedSession): Future[Int] =
-    updateFuture {
-      update(Parts)
-        .set(
-          column.deletedAt -> deletedAt
-        )
-        .where.eq(column.productId, productId)
-        .and.isNull(column.deletedAt)
-    }
+  def destroyAllByProductId(productId: Long, deletedAt: DateTime = DateTime.now)
+                           (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
+    update(Parts)
+      .set(
+        column.deletedAt -> deletedAt
+      )
+      .where.eq(column.productId, productId)
+      .and.isNull(column.deletedAt)
+  }
 
 }

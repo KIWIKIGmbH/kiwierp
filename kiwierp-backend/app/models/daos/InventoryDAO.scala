@@ -42,17 +42,20 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
 
   private val pa = Parts.pa
 
-  def findAllByPartsId(partsId: Long)(page: Int = DEFAULT_PAGE)(implicit s: ADS = AsyncDB.sharedSession): Future[List[Inventory]] =
-    withSQL {
-      selectFrom(Inventory as i)
-        .where.eq(i.partsId, partsId)
-        .and.append(isNotDeleted)
-        .orderBy(i.id)
-        .limit(DEFAULT_LIMIT)
-        .offset((page - 1) * DEFAULT_LIMIT)
-    } mapListFuture apply(i)
+  def findAllByPartsId(partsId: Long)
+                      (page: Int = DEFAULT_PAGE)
+                      (implicit s: ADS = AsyncDB.sharedSession): Future[List[Inventory]] = withSQL {
+    selectFrom(Inventory as i)
+      .where.eq(i.partsId, partsId)
+      .and.append(isNotDeleted)
+      .orderBy(i.id)
+      .limit(DEFAULT_LIMIT)
+      .offset((page - 1) * DEFAULT_LIMIT)
+  } mapListFuture apply(i)
 
-  def create(partsId: Long, description: Option[String], quantity: Int)(implicit s: ADS = AsyncDB.sharedSession): Future[Inventory] = {
+  def create(partsId: Long,
+             description: Option[String],
+             quantity: Int)(implicit s: ADS = AsyncDB.sharedSession): Future[Inventory] = {
     val createdAt = DateTime.now
     val updatedAt = createdAt
 
@@ -71,7 +74,8 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
     }
   }
 
-  def findWithParts(id: Long, partsId: Long)(implicit s: ADS = AsyncDB.sharedSession): Future[Inventory] = withSQL {
+  def findWithParts(id: Long, partsId: Long)
+                   (implicit s: ADS = AsyncDB.sharedSession): Future[Inventory] = withSQL {
     selectFrom[Inventory](Inventory as i)
       .innerJoin(Parts as pa).on(
         sqls
@@ -82,19 +86,22 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
       .and.eq(i.partsId, partsId)
   } mapSingleFuture apply(i, pa)
 
-  def save(id: Long)(description: Option[String], quantity: Int)(implicit s: ADS = AsyncDB.sharedSession): Future[Int] =
-    updateFutureOrNotFound {
-      update(Inventory)
-        .set(
-          column.description -> description,
-          column.quantity -> quantity,
-          column.updatedAt -> DateTime.now
-        )
-        .where.eq(column.id, id)
-        .and.isNull(column.deletedAt)
-    }
+  def save(id: Long)
+          (description: Option[String], quantity: Int)
+          (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFutureOrNotFound {
+    update(Inventory)
+      .set(
+        column.description -> description,
+        column.quantity -> quantity,
+        column.updatedAt -> DateTime.now
+      )
+      .where.eq(column.id, id)
+      .and.isNull(column.deletedAt)
+  }
 
-  def updateQuantity(id: Long)(quantity: Int)(implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
+  def updateQuantity(id: Long)
+                    (quantity: Int)
+                    (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
     update(Inventory)
       .set(
         column.quantity -> quantity
@@ -103,7 +110,8 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
       .and.isNull(column.deletedAt)
   }
 
-  def destroyAllByPartsId(partsId: Long, deletedAt: DateTime = DateTime.now)(implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
+  def destroyAllByPartsId(partsId: Long, deletedAt: DateTime = DateTime.now)
+                         (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
     update(Inventory)
       .set(
         column.deletedAt -> deletedAt
@@ -112,7 +120,8 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
       .and.isNull(column.deletedAt)
   }
 
-  def destroyAllByPartsIds(partsIds: Seq[Long], deletedAt: DateTime = DateTime.now)(implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
+  def destroyAllByPartsIds(partsIds: Seq[Long], deletedAt: DateTime = DateTime.now)
+                          (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
     update(Inventory)
       .set(
         column.deletedAt -> deletedAt

@@ -50,7 +50,9 @@ trait InventoryOrderDAO extends KiwiERPDAO[InventoryOrder] {
 
   private val pa = Parts.pa
 
-  def findAllByPartsId(partsId: Long)(page: Int = DEFAULT_PAGE)(implicit s: ADS = AsyncDB.sharedSession): Future[List[InventoryOrder]] =
+  def findAllByPartsId(partsId: Long)
+                      (page: Int = DEFAULT_PAGE)
+                      (implicit s: ADS = AsyncDB.sharedSession): Future[List[InventoryOrder]] =
     withSQL {
       selectFrom(InventoryOrder as io)
         .where.eq(io.partsId, partsId)
@@ -60,7 +62,11 @@ trait InventoryOrderDAO extends KiwiERPDAO[InventoryOrder] {
         .offset((page - 1) * DEFAULT_LIMIT)
     } mapListFuture apply(io)
 
-  def create(partsId: Long, supplierId: Long, quantity: Int, orderedDate: DateTime, status: String)(implicit s: ADS = AsyncDB.sharedSession): Future[InventoryOrder] = {
+  def create(partsId: Long,
+             supplierId: Long,
+             quantity: Int,
+             orderedDate: DateTime,
+             status: String)(implicit s: ADS = AsyncDB.sharedSession): Future[InventoryOrder] = {
     val createdAt = DateTime.now
     val updatedAt = createdAt
 
@@ -90,18 +96,22 @@ trait InventoryOrderDAO extends KiwiERPDAO[InventoryOrder] {
     }
   }
 
-  def findWithParts(id: Long)(implicit s: ADS = AsyncDB.sharedSession): Future[InventoryOrder] = withSQL {
-    selectFrom[InventoryOrder](InventoryOrder as io)
-      .innerJoin(Parts as pa).on(
-        sqls
-          .eq(io.partsId, pa.id)
-          .and.isNull(pa.deletedAt)
-      )
-      .where.eq(io.id, id)
-      .and.append(isNotDeleted)
-  } mapSingleFuture apply(io, pa)
+  def findWithParts(id: Long)(implicit s: ADS = AsyncDB.sharedSession): Future[InventoryOrder] =
+    withSQL {
+      selectFrom[InventoryOrder](InventoryOrder as io)
+        .innerJoin(Parts as pa).on(
+          sqls
+            .eq(io.partsId, pa.id)
+            .and.isNull(pa.deletedAt)
+        )
+        .where.eq(io.id, id)
+        .and.append(isNotDeleted)
+    } mapSingleFuture apply(io, pa)
 
-  def save(id: Long)(shippedDate: Option[DateTime] = None, deliveredDate: Option[DateTime] = None, status: String)
+  def save(id: Long)
+          (shippedDate: Option[DateTime] = None,
+           deliveredDate: Option[DateTime] = None,
+           status: String)
           (implicit session: ADS = AsyncDB.sharedSession): Future[Int] = updateFutureOrNotFound {
     update(InventoryOrder)
       .set(

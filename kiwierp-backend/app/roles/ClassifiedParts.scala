@@ -11,15 +11,18 @@ trait ClassifiedParts {
 
   this: Parts =>
 
-  def checkUnclassifiedQuantity(classifiedQuantity: Int): Unit =
+  def checkUnclassifiedQuantity(classifiedQuantity: Int) =
     if (classifiedQuantity > unclassifiedQuantity) throw new InvalidRequest
 
-  def classified(quantityAddedInventory: Inventory with QuantityAddedInventory, classifiedQuantity: Int)(implicit s: AsyncDBSession): Future[Int] =
+  def classified(quantityAddedInventory: Inventory with QuantityAddedInventory,
+                 classifiedQuantity: Int)(implicit s: AsyncDBSession): Future[Int] =
     classified(classifiedQuantity) flatMap { _ =>
       quantityAddedInventory.store(classifiedQuantity)
     }
 
-  def classifiedAndAddInventory(classifiedQuantity: Int, inventoryDescription: Option[String])(implicit s: AsyncDBSession): Future[Inventory] =
+  def classifiedAndAddInventory(classifiedQuantity: Int,
+                                inventoryDescription: Option[String])
+                               (implicit s: AsyncDBSession): Future[Inventory] =
     classified(classifiedQuantity) flatMap { _ =>
       Inventory.create(id, inventoryDescription, classifiedQuantity)
     }

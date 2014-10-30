@@ -36,7 +36,8 @@ trait SupplierDAO extends KiwiERPDAO[Supplier] {
 
   val su = s
 
-  def create(companyName: String, personalName: String, phoneNumber: String)(implicit session: ADS = AsyncDB.sharedSession): Future[Supplier] = {
+  def create(companyName: String, personalName: String, phoneNumber: String)
+            (implicit session: ADS = AsyncDB.sharedSession): Future[Supplier] = {
     val createdAt = DateTime.now
     val updatedAt = createdAt
 
@@ -55,17 +56,17 @@ trait SupplierDAO extends KiwiERPDAO[Supplier] {
     }
   }
 
-  def save(id: Long)(companyName: String, personalName: String, phoneNumber: String)(implicit s: ADS = AsyncDB.sharedSession): Future[Int] =
-    updateFutureOrNotFound {
-      update(Supplier)
-        .set(
-          column.companyName -> companyName,
-          column.personalName -> personalName,
-          column.phoneNumber -> phoneNumber,
-          column.updatedAt -> DateTime.now
-        )
-        .where.eq(column.id, id)
-        .and.isNull(column.deletedAt)
-    }
+  def save(id: Long)(companyName: String, personalName: String, phoneNumber: String)
+          (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFutureOrNotFound {
+    update(Supplier)
+      .set(
+        column.companyName -> companyName,
+        column.personalName -> personalName,
+        column.phoneNumber -> phoneNumber,
+        column.updatedAt -> DateTime.now
+      )
+      .where.eq(column.id, id)
+      .and.isNull(column.deletedAt)
+  }
 
 }

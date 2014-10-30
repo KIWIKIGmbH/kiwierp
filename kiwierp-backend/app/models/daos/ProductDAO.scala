@@ -36,7 +36,8 @@ trait ProductDAO extends KiwiERPDAO[Product] {
 
   private val (pa, i, io) = (Parts.pa, Inventory.i, InventoryOrder.io)
 
-  def create(name: String, description: Option[String])(implicit s: ADS = AsyncDB.sharedSession): Future[Product] = {
+  def create(name: String, description: Option[String])
+            (implicit s: ADS = AsyncDB.sharedSession): Future[Product] = {
     val createdAt = DateTime.now
     val updatedAt = createdAt
 
@@ -54,36 +55,36 @@ trait ProductDAO extends KiwiERPDAO[Product] {
     }
   }
 
-  def findWithPartsAndInventoriesAndInventoryOrders(id: Long)(implicit s: ADS = AsyncDB.sharedSession): Future[Product] =
-    withSQL {
-      selectFrom[Product](Product as pr)
+  def findWithPartsAndInventoriesAndInventoryOrders
+  (id: Long)(implicit s: ADS = AsyncDB.sharedSession): Future[Product] = withSQL {
+    selectFrom[Product](Product as pr)
       .leftJoin(Parts as pa).on(
-          sqls
-            .eq(pa.productId, pr.id)
-            .and.isNull(pa.deletedAt)
-        )
-        .leftJoin(Inventory as i).on(
-          sqls
-            .eq(i.partsId, pa.id)
-            .and.isNull(i.deletedAt)
-        )
-        .leftJoin(InventoryOrder as io).on(
-          sqls
-            .eq(io.partsId, pa.id)
-            .and.isNull(io.deletedAt)
-        )
-        .where.eq(pr.id, id)
-        .and.append(isNotDeleted)
-    }.one(apply(pr)).toManies(Parts.opt(pa), Inventory.opt(i), InventoryOrder.opt(io)).map { (product, partsSeq, inventories, inventoryOrders) =>
-      product.copy(
-        partsSeq = partsSeq map { parts =>
-          parts.copy(
-            inventories = inventories filter (_.partsId == parts.id),
-            inventoryOrders = inventoryOrders filter (_.partsId == parts.id)
-          )
-        }
+        sqls
+          .eq(pa.productId, pr.id)
+          .and.isNull(pa.deletedAt)
       )
-    }.single().future map getOrNotFound
+      .leftJoin(Inventory as i).on(
+        sqls
+          .eq(i.partsId, pa.id)
+          .and.isNull(i.deletedAt)
+      )
+      .leftJoin(InventoryOrder as io).on(
+        sqls
+          .eq(io.partsId, pa.id)
+          .and.isNull(io.deletedAt)
+      )
+      .where.eq(pr.id, id)
+      .and.append(isNotDeleted)
+  }.one(apply(pr)).toManies(Parts.opt(pa), Inventory.opt(i), InventoryOrder.opt(io)).map { (product, partsSeq, inventories, inventoryOrders) =>
+    product.copy(
+      partsSeq = partsSeq map { parts =>
+        parts.copy(
+          inventories = inventories filter (_.partsId == parts.id),
+          inventoryOrders = inventoryOrders filter (_.partsId == parts.id)
+        )
+      }
+    )
+  }.single().future map getOrNotFound
 
   def findWithPartsSeq(id: Long)(implicit s: ADS = AsyncDB.sharedSession): Future[Product] =
     withSQL {
@@ -99,16 +100,17 @@ trait ProductDAO extends KiwiERPDAO[Product] {
       product.copy(partsSeq = partsSeq)
     }.single().future map getOrNotFound
 
-  def save(id: Long)(name: String, description: Option[String])(implicit s: ADS = AsyncDB.sharedSession): Future[Int] =
-    updateFutureOrNotFound {
-      update(Product)
-        .set(
-          column.name -> name,
-          column.description -> description,
-          column.updatedAt -> DateTime.now
-        )
-        .where.eq(column.id, id)
-        .and.isNull(column.deletedAt)
-    }
+  def save(id: Long)
+          (name: String, description: Option[String])
+          (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFutureOrNotFound {
+    update(Product)
+      .set(
+        column.name -> name,
+        column.description -> description,
+        column.updatedAt -> DateTime.now
+      )
+      .where.eq(column.id, id)
+      .and.isNull(column.deletedAt)
+  }
 
 }

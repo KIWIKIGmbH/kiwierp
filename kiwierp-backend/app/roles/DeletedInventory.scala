@@ -10,6 +10,7 @@ trait DeletedInventory {
 
   this: Inventory =>
 
-  def deleted(deletedAt: DateTime)(implicit s: AsyncDBSession): Future[Int] = Inventory.destroy(id, deletedAt)
+  def deleted(deletedAt: DateTime)(implicit s: AsyncDBSession): Future[Int] =
+    Inventory.destroy(id, deletedAt)
 
 }

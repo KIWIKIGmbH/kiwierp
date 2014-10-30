@@ -12,7 +12,8 @@ trait AuthenticatedUser {
 
   this: User =>
 
-  def checkPassword(password: Password): Unit = if (password.cryptPassword != this.password) throw new InvalidUser
+  def checkPassword(password: Password) =
+    if (password.cryptPassword != this.password) throw new InvalidUser
 
   def createAccessToken()(implicit s: AsyncDBSession): Future[AccessToken] =
     AccessToken.destroyByUserId(id) flatMap (_ => AccessToken.createByUserId(id))

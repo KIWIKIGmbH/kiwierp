@@ -8,7 +8,9 @@ import scalikejdbc.async.{AsyncDB, AsyncDBSession}
 
 import scala.concurrent.Future
 
-class DeleteInventoryContext private (inventory: Inventory, deletedAt: DateTime = DateTime.now)(implicit tx: AsyncDBSession) {
+class DeleteInventoryContext private
+(inventory: Inventory,
+ deletedAt: DateTime = DateTime.now)(implicit tx: AsyncDBSession) {
 
   private def delete(): Future[Int] = {
     val deletedInventory = new Inventory(inventory) with DeletedInventory
@@ -22,7 +24,9 @@ object DeleteInventoryContext {
 
   def apply(id: Long): Future[Int] = AsyncDB localTx { implicit tx =>
     Inventory.find(id) flatMap { inventory =>
-      new DeleteInventoryContext(inventory).delete()
+      val cxt = new DeleteInventoryContext(inventory)
+
+      cxt.delete()
     }
   }
 

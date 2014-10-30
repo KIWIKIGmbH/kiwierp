@@ -9,7 +9,9 @@ trait PartsAddedProduct {
 
   this: Product =>
 
-  def addParts(name: String, description: Option[String], neededQuantity: Int)(implicit s: AsyncDBSession): Future[Parts] =
+  def addParts(name: String,
+               description: Option[String],
+               neededQuantity: Int)(implicit s: AsyncDBSession): Future[Parts] =
     Parts.create(id, name, description, neededQuantity)
 
 }
