@@ -48,7 +48,7 @@ trait KiwiERPDAO[A] extends SQLSyntaxSupport[A] {
   } mapSingleFuture apply(s)
 
   def destroy(id: Long, deletedAt: DateTime = DateTime.now)
-             (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = pdateFutureOrNotFound {
+             (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFutureOrNotFound {
     update(this)
       .set(
         column.deletedAt -> deletedAt
