@@ -3,9 +3,10 @@ package controllers
 import contexts.{ClassifyPartsContext, CreatePartsContext, DeletePartsContext}
 import jsons.PartsJson
 import models.Parts
-import play.api.data.Forms._
-import play.api.data._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
+import play.api.libs.json.Reads._
 import utils.exceptions.InvalidRequest
 
 object PartsController extends KiwiERPController {
@@ -23,26 +24,29 @@ object PartsController extends KiwiERPController {
   }
 
 
-  def create = AuthorizedAction.async(parse.urlFormEncoded) { implicit req =>
+  def create = AuthorizedAction.async(parse.json) { implicit req =>
     case class CreateForm
     (productId: Long,
      name: String,
      description: Option[String],
      neededQuantity: Int)
 
-    val form = Form(
-      mapping(
-        "productId" -> longNumber(min = 1, max = MAX_LONG_NUMBER),
-        "name" -> nonEmptyText(minLength = 1, maxLength = 120),
-        "description" -> optional(text(maxLength = 500)),
-        "neededQuantity" -> number(min = 1, max = MAX_NUMBER)
-      )(CreateForm.apply)(CreateForm.unapply))
+    implicit val createReads: Reads[CreateForm] = (
+      (__ \ 'productId).read[Long](min[Long](1) keepAnd max[Long](MAX_LONG_NUMBER)) and
+      (__ \ 'name).read[String](minLength[String](1) keepAnd maxLength[String](120)) and
+      (__ \ 'description)
+        .readNullable[String](minLength[String](1) keepAnd maxLength[String](500)) and
+      (__ \ 'neededQuantity).read[Int](min[Int](1) keepAnd max[Int](MAX_NUMBER))
+    )(CreateForm.apply _)
 
-    form.bindFromRequestAndCheckErrors { f =>
-      CreatePartsContext(f.productId, f.name, f.description, f.neededQuantity) map { parts =>
-        CreatedWithLocation(PartsJson.create(parts))
-      }
-    }
+    req.body.validate[CreateForm].fold(
+      valid = { j =>
+        CreatePartsContext(j.productId, j.name, j.description, j.neededQuantity) map { parts =>
+          CreatedWithLocation(PartsJson.create(parts))
+        }
+      },
+      invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
+    )
   }
 
   def read(id: Long) = AuthorizedAction.async {
@@ -51,51 +55,57 @@ object PartsController extends KiwiERPController {
     }
   }
 
-  def update(id: Long) = AuthorizedAction.async(parse.urlFormEncoded) { implicit req =>
+  def update(id: Long) = AuthorizedAction.async(parse.json) { implicit req =>
     case class UpdateForm(name: String, description: Option[String], neededQuantity: Int)
 
-    val form = Form(
-      mapping(
-        "name" -> nonEmptyText(minLength = 1, maxLength = 120),
-        "description" -> optional(text(maxLength = 500)),
-        "neededQuantity" -> number(min = 1, max = MAX_NUMBER)
-      )(UpdateForm.apply)(UpdateForm.unapply))
+    implicit val updateReads: Reads[UpdateForm] = (
+      (__ \ 'name).read[String](minLength[String](1) keepAnd maxLength[String](120)) and
+      (__ \ 'description)
+        .readNullable[String](minLength[String](1) keepAnd maxLength[String](500)) and
+      (__ \ 'neededQuantity).read[Int](min[Int](1) keepAnd max[Int](MAX_NUMBER))
+    )(UpdateForm.apply _)
 
-    form.bindFromRequestAndCheckErrors { f =>
-      Parts.save(id)(f.name, f.description, f.neededQuantity) map (_ => NoContent)
-    }
+    req.body.validate[UpdateForm].fold(
+      valid = { j =>
+        Parts.save(id)(j.name, j.description, j.neededQuantity) map (_ => NoContent)
+      },
+      invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
+    )
   }
 
   def delete(id: Long) = AuthorizedAction.async {
     DeletePartsContext(id) map (_ => NoContent)
   }
 
-  def classify(id: Long) = AuthorizedAction.async(parse.urlFormEncoded) { implicit req =>
+  def classify(id: Long) = AuthorizedAction.async(parse.json) { implicit req =>
     case class ClassifyForm
     (classifiedQuantity: Int,
      inventoryId: Option[Long],
      inventoryDescription: Option[String])
 
-    val form = Form(
-      mapping(
-        "classifiedQuantity" -> number(min = 1, max = MAX_NUMBER),
-        "inventoryId" -> optional(longNumber(min = 1, max = MAX_LONG_NUMBER)),
-        "inventoryDescription" -> optional(text)
-      )(ClassifyForm.apply)(ClassifyForm.unapply))
+    implicit val classifyReads: Reads[ClassifyForm] = (
+      (__ \ 'classifiedQuantity).read[Int](min[Int](1) keepAnd max[Int](MAX_NUMBER)) and
+      (__ \ 'inventoryId).readNullable[Long](min[Long](1) keepAnd max[Long](MAX_LONG_NUMBER)) and
+      (__ \ 'inventoryDescription)
+        .readNullable[String](minLength[String](1) keepAnd maxLength[String](500))
+    )(ClassifyForm.apply _)
 
-    form.bindFromRequestAndCheckErrors { f =>
-      f.inventoryId map { inventoryId =>
-        if (f.inventoryDescription.isEmpty) {
-          ClassifyPartsContext(id, f.classifiedQuantity, inventoryId) map (_ => NoContent)
-        } else {
-          throw new InvalidRequest
+    req.body.validate[ClassifyForm].fold(
+      valid = { j =>
+        j.inventoryId map { inventoryId =>
+          if (j.inventoryDescription.isEmpty) {
+            ClassifyPartsContext(id, j.classifiedQuantity, inventoryId) map (_ => NoContent)
+          } else {
+            throw new InvalidRequest
+          }
+        } getOrElse {
+          ClassifyPartsContext(id, j.classifiedQuantity, j.inventoryDescription) map { inventory =>
+            CreatedWithLocation(PartsJson.classify(inventory), Option("/inventories"))
+          }
         }
-      } getOrElse {
-        ClassifyPartsContext(id, f.classifiedQuantity, f.inventoryDescription) map { inventory =>
-          CreatedWithLocation(PartsJson.classify(inventory), Option("/inventories"))
-        }
-      }
-    }
+      },
+      invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
+    )
   }
 
 }

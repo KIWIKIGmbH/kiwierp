@@ -6,7 +6,7 @@ import play.api.Play.current
 import play.api.data.Form
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.concurrent.Promise
-import play.api.libs.json.JsValue
+import play.api.libs.json.{Reads, JsValue}
 import play.api.mvc._
 import utils.exceptions._
 
@@ -67,24 +67,10 @@ trait KiwiERPController extends Controller {
 
   def isId(idStr: String): Boolean = isNum(idStr) && idStr.toLong < MAX_LONG_NUMBER
 
-  implicit class BindFromRequestAndCheckErrors[T](self: Form[T]) {
+  override val TODO = AuthorizedAction.async(KiwiERPError.futureResult(new APINotImplemented))
 
-    def bindFromRequestAndCheckErrors(success: T => Future[Result])
-                                     (implicit req: Request[FormUrlEncoded]): Future[Result] = {
-      val hasErrors: Form[T] => Future[Result] =
-        (ef) => KiwiERPError.futureResult(new InvalidRequest)
-
-      self.bindFromRequest.fold(hasErrors, success)
-    }
-
-  }
-
-  override val TODO = AuthorizedAction.async { _ =>
-    KiwiERPError.futureResult(new APINotImplemented)
-  }
-
-  def CreatedWithLocation(json: JsValue,path: Option[String] = None)
-                         (implicit req: AuthorizedRequest[FormUrlEncoded]): Result = {
+  def CreatedWithLocation[A](json: JsValue,path: Option[String] = None)
+                            (implicit req: AuthorizedRequest[A]): Result = {
     val appContext = current.configuration.getString("application.context").get
     val host = req.host
     val resource = path map (appContext + _) getOrElse req.path

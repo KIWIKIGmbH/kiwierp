@@ -3,9 +3,11 @@ package controllers
 import contexts.DeleteProductContext
 import jsons.ProductJson
 import models.Product
-import play.api.data.Forms._
-import play.api.data._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
+import play.api.libs.json.Reads._
+import utils.exceptions.InvalidRequest
 
 object ProductsController extends KiwiERPController {
 
@@ -17,20 +19,22 @@ object ProductsController extends KiwiERPController {
     }
   }
 
-  def create = AuthorizedAction.async(parse.urlFormEncoded) { implicit req =>
+  def create = AuthorizedAction.async(parse.json) { implicit req =>
     case class CreateForm(name: String, description: Option[String])
 
-    val form = Form(
-      mapping(
-        "name" -> nonEmptyText(minLength = 1, maxLength = 120),
-        "description" -> optional(text(maxLength = 500))
-      )(CreateForm.apply)(CreateForm.unapply))
+    implicit val createReads: Reads[CreateForm] = (
+      (__ \ 'name).read[String](minLength[String](1) keepAnd maxLength[String](120)) and
+      (__ \ 'description).readNullable[String](minLength[String](1) keepAnd maxLength[String](120))
+    )(CreateForm.apply _)
 
-    form.bindFromRequestAndCheckErrors { f =>
-      Product.create(f.name, f.description) map { product =>
-        CreatedWithLocation(ProductJson.create(product))
-      }
-    }
+    req.body.validate[CreateForm].fold(
+      valid = { j =>
+        Product.create(j.name, j.description) map { product =>
+          CreatedWithLocation(ProductJson.create(product))
+        }
+      },
+      invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
+    )
   }
 
   def read(id: Long) = AuthorizedAction.async {
@@ -39,18 +43,20 @@ object ProductsController extends KiwiERPController {
     }
   }
 
-  def update(id: Long) = AuthorizedAction.async(parse.urlFormEncoded) { implicit req =>
+  def update(id: Long) = AuthorizedAction.async(parse.json) { implicit req =>
     case class UpdateForm(name: String, description: Option[String])
 
-    val form = Form(
-      mapping(
-        "name" -> nonEmptyText(minLength = 1, maxLength = 120),
-        "description" -> optional(text(maxLength = 500))
-      )(UpdateForm.apply)(UpdateForm.unapply))
+    implicit val updateReads: Reads[UpdateForm] = (
+      (__ \ 'name).read[String](minLength[String](1) keepAnd maxLength[String](120)) and
+      (__ \ 'description).readNullable[String](minLength[String](1) keepAnd maxLength[String](120))
+    )(UpdateForm.apply _)
 
-    form.bindFromRequestAndCheckErrors { f =>
-      Product.save(id)(f.name, f.description) map (_ => NoContent)
-    }
+    req.body.validate[UpdateForm].fold(
+      valid = { j =>
+        Product.save(id)(j.name, j.description) map (_ => NoContent)
+      },
+      invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
+    )
   }
 
   def delete(id: Long) = AuthorizedAction.async {

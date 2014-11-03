@@ -3,9 +3,10 @@ package controllers
 import contexts.{CreateInventoryContext, DeleteInventoryContext}
 import jsons.InventoryJson
 import models.Inventory
-import play.api.data.Forms._
-import play.api.data._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
+import play.api.libs.json.Reads._
 import utils.exceptions.InvalidRequest
 
 object InventoriesController extends KiwiERPController {
@@ -22,21 +23,24 @@ object InventoriesController extends KiwiERPController {
     } getOrElse (throw new InvalidRequest)
   }
 
-  def create = AuthorizedAction.async(parse.urlFormEncoded) { implicit req =>
+  def create = AuthorizedAction.async(parse.json) { implicit req =>
     case class CreateForm(partsId: Long, description: Option[String], quantity: Int)
 
-    val form = Form(
-      mapping(
-        "partsId" -> longNumber(min = 0, max = MAX_LONG_NUMBER),
-        "description" -> optional(text(maxLength = 500)),
-        "quantity" -> number(min = 1, max = MAX_NUMBER)
-      )(CreateForm.apply)(CreateForm.unapply))
+    implicit val createReads: Reads[CreateForm] = (
+      (__ \ 'partsId).read[Long](min[Long](1) keepAnd max[Long](MAX_LONG_NUMBER)) and
+      (__ \ 'description)
+        .readNullable[String](maxLength[String](1) keepAnd minLength[String](500)) and
+      (__ \ 'quantity).read[Int](min[Int](1) keepAnd max[Int](MAX_NUMBER))
+    )(CreateForm.apply _)
 
-    form.bindFromRequestAndCheckErrors { f =>
-      CreateInventoryContext(f.partsId, f.description, f.quantity) map { inventory =>
-        CreatedWithLocation(InventoryJson.create(inventory))
-      }
-    }
+    req.body.validate[CreateForm].fold(
+      valid = { j =>
+        CreateInventoryContext(j.partsId, j.description, j.quantity) map { inventory =>
+          CreatedWithLocation(InventoryJson.create(inventory))
+        }
+      },
+      invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
+    )
   }
 
   def read(id: Long) = AuthorizedAction.async {
@@ -45,18 +49,21 @@ object InventoriesController extends KiwiERPController {
     }
   }
 
-  def update(id: Long) = AuthorizedAction.async(parse.urlFormEncoded) { implicit req =>
+  def update(id: Long) = AuthorizedAction.async(parse.json) { implicit req =>
     case class UpdateForm(description: Option[String], quantity: Int)
 
-    val form = Form(
-      mapping(
-        "description" -> optional(text(maxLength = 500)),
-        "quantity" -> number(min = 1, max = MAX_NUMBER)
-      )(UpdateForm.apply)(UpdateForm.unapply))
+    implicit val createReads: Reads[UpdateForm] = (
+      (__ \ 'description)
+        .readNullable[String](maxLength[String](1) keepAnd minLength[String](500)) and
+      (__ \ 'quantity).read[Int](min[Int](1) keepAnd max[Int](MAX_NUMBER))
+    )(UpdateForm.apply _)
 
-    form.bindFromRequestAndCheckErrors { f =>
-      Inventory.save(id)(f.description, f.quantity) map (_ => NoContent)
-    }
+    req.body.validate[UpdateForm].fold(
+      valid = { j =>
+        Inventory.save(id)(j.description, j.quantity) map (_ => NoContent)
+      },
+      invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
+    )
   }
 
   def delete(id: Long) = AuthorizedAction.async {

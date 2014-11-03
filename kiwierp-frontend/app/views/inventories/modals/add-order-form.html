@@ -6,9 +6,7 @@
   <form role="form" name="orderForm">
     <div class="form-group">
       <label>Supplier</label>
-      <select data-ng-model="orderFormInputs.supplierId" required>
-        <option data-ng-repeat="supplier in suppliers" value="{{ supplier.id }}">{{ supplier.companyName }}</option>
-      </select>
+      <select data-ng-model="orderFormInputs.supplierId" data-ng-options="supplier.id as supplier.companyName for supplier in suppliers" required></select>
     </div>
     <div class="form-group">
       <label for="order-form-quantity">Order Quantity</label>
