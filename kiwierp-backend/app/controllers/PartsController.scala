@@ -9,7 +9,7 @@ import play.api.libs.json.Reads._
 import play.api.libs.json._
 import utils.exceptions.InvalidRequest
 
-object PartsController extends KiwiERPController {
+object PartsController extends KiwiERPController with PartsJson {
 
   def list = AuthorizedAction.async { implicit req =>
     req.getQueryString("productId") filter isId map { productIdStr =>
@@ -17,8 +17,13 @@ object PartsController extends KiwiERPController {
 
       Page(Parts.findAllByProductId(productId)) map { results =>
         val (partsList, page) = results
+        val json = Json.obj(
+          "count" -> partsList.size,
+          "page" -> page,
+          "results" -> Json.toJson(partsList)
+        )
 
-        Ok(PartsJson.index(partsList, page))
+        Ok(json)
       }
     } getOrElse (throw new InvalidRequest)
   }
@@ -42,7 +47,7 @@ object PartsController extends KiwiERPController {
     req.body.validate[CreateForm].fold(
       valid = { j =>
         CreatePartsContext(j.productId, j.name, j.description, j.neededQuantity) map { parts =>
-          CreatedWithLocation(PartsJson.create(parts))
+          CreatedWithLocation(Json.toJson(parts))
         }
       },
       invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
@@ -51,7 +56,7 @@ object PartsController extends KiwiERPController {
 
   def read(id: Long) = AuthorizedAction.async {
     Parts.find(id) map { parts =>
-      Ok(PartsJson.read(parts))
+      Ok(Json.toJson(parts))
     }
   }
 
@@ -100,7 +105,7 @@ object PartsController extends KiwiERPController {
           }
         } getOrElse {
           ClassifyPartsContext(id, j.classifiedQuantity, j.inventoryDescription) map { inventory =>
-            CreatedWithLocation(PartsJson.classify(inventory), Option("/inventories"))
+            CreatedWithLocation(Json.toJson(inventory), Option("/inventories"))
           }
         }
       },

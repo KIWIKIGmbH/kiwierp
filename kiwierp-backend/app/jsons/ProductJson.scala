@@ -1,29 +1,19 @@
 package jsons
 
 import models.Product
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json, Writes}
 
-object ProductJson extends KiwiERPJson[Product] {
+trait ProductJson extends KiwiERPJson with PartsJson {
 
-  def base(product: Product) = Json.obj(
-    "createdAt" -> product.createdAt,
-    "description" -> product.description,
-    "id" -> product.id,
-    "name" -> product.name,
-    "updatedAt" -> product.updatedAt
-  )
-
-  override def read(product: Product) = base(product) ++ Json.obj(
-    "partsList" -> product.partsSeq.map { parts =>
-      PartsJson.base(parts) ++ Json.obj(
-        "inventories" -> parts.inventories.map { inventory =>
-          InventoryJson.base(inventory)
-        },
-        "inventoryOrders" -> parts.inventoryOrders.map { inventoryOrder =>
-          InventoryOrderJson.base(inventoryOrder)
-        }
-      )
-    }
-  )
+  implicit val productWrites = new Writes[Product] {
+    def writes(product: Product): JsValue = Json.obj(
+      "createdAt" -> dateTimeToString(product.createdAt),
+      "description" -> product.description,
+      "id" -> product.id,
+      "name" -> product.name,
+      "updatedAt" -> dateTimeToString(product.updatedAt),
+      "partsList" -> Json.toJson(product.partsSeq)
+    )
+  }
 
 }

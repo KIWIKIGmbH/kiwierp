@@ -9,7 +9,7 @@ import play.api.libs.json.Reads._
 import play.api.libs.json._
 import utils.exceptions.InvalidRequest
 
-object InventoriesController extends KiwiERPController {
+object InventoriesController extends KiwiERPController with InventoryJson {
 
   def list = AuthorizedAction.async { implicit req =>
     req.getQueryString("partsId") filter isId map { partsIdStr =>
@@ -17,8 +17,13 @@ object InventoriesController extends KiwiERPController {
 
       Page(Inventory.findAllByPartsId(partsId)) map { results =>
         val (inventories, page) = results
+        val json = Json.obj(
+          "count" -> inventories.size,
+          "page" -> page,
+          "results" -> Json.toJson(inventories)
+        )
 
-        Ok(InventoryJson.index(inventories, page))
+        Ok(json)
       }
     } getOrElse (throw new InvalidRequest)
   }
@@ -36,7 +41,7 @@ object InventoriesController extends KiwiERPController {
     req.body.validate[CreateForm].fold(
       valid = { j =>
         CreateInventoryContext(j.partsId, j.description, j.quantity) map { inventory =>
-          CreatedWithLocation(InventoryJson.create(inventory))
+          CreatedWithLocation(Json.toJson(inventory))
         }
       },
       invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
@@ -45,7 +50,7 @@ object InventoriesController extends KiwiERPController {
 
   def read(id: Long) = AuthorizedAction.async {
     Inventory.find(id) map { inventory =>
-      Ok(InventoryJson.read(inventory))
+      Ok(Json.toJson(inventory))
     }
   }
 

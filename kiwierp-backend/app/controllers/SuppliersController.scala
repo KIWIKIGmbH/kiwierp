@@ -8,13 +8,18 @@ import play.api.libs.json.Reads._
 import play.api.libs.json._
 import utils.exceptions.InvalidRequest
 
-object SuppliersController extends KiwiERPController {
+object SuppliersController extends KiwiERPController with SupplierJson {
 
   def list = AuthorizedAction.async { implicit req =>
     Page(Supplier.findAll) map { results =>
       val (suppliers, page) = results
+      val json = Json.obj(
+        "count" -> suppliers.size,
+        "page" -> page,
+        "results" -> Json.toJson(suppliers)
+      )
 
-      Ok(SupplierJson.index(suppliers, page))
+      Ok(json)
     }
   }
 
@@ -30,7 +35,7 @@ object SuppliersController extends KiwiERPController {
     req.body.validate[CreateForm].fold(
       valid = { j =>
         Supplier.create(j.companyName, j.personalName, j.phoneNumber) map { supplier =>
-          CreatedWithLocation(SupplierJson.create(supplier))
+          CreatedWithLocation(Json.toJson(supplier))
         }
       },
       invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
@@ -38,9 +43,7 @@ object SuppliersController extends KiwiERPController {
   }
 
   def read(id: Long) = AuthorizedAction.async {
-    Supplier.find(id) map { supplier =>
-      Ok(SupplierJson.read(supplier))
-    }
+    Supplier.find(id) map (supplier => Ok(Json.toJson(supplier)))
   }
 
   def update(id: Long) = AuthorizedAction.async(parse.json) { implicit req =>

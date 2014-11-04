@@ -1,16 +1,18 @@
 package jsons
 
 import models.Inventory
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json, Writes}
 
-object InventoryJson extends KiwiERPJson[Inventory] {
+trait InventoryJson extends KiwiERPJson {
 
-  def base(inventory: Inventory) = Json.obj(
-    "createdAt" -> inventory.createdAt,
-    "description" -> inventory.description,
-    "id" -> inventory.id,
-    "quantity" -> inventory.quantity,
-    "updatedAt" -> inventory.updatedAt
-  )
+  implicit val inventoryWrites = new Writes[Inventory] {
+    def writes(inventory: Inventory): JsValue = Json.obj(
+      "createdAt" -> dateTimeToString(inventory.createdAt),
+      "description" -> inventory.description,
+      "id" -> inventory.id,
+      "quantity" -> inventory.quantity,
+      "updatedAt" -> dateTimeToString(inventory.updatedAt)
+    )
+  }
 
 }

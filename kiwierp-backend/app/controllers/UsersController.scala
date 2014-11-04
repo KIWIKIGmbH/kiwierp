@@ -11,13 +11,18 @@ import play.api.libs.json.Reads._
 import play.api.libs.json._
 import utils.exceptions.InvalidRequest
 
-object UsersController extends KiwiERPController {
+object UsersController extends KiwiERPController with UserJson {
 
   def list = AuthorizedAction.async { implicit req =>
     Page(User.findAll) map { results =>
       val (users, page) = results
+      val json = Json.obj(
+        "count" -> users.size,
+        "page" -> page,
+        "results" -> Json.toJson(users)
+      )
 
-      Ok(UserJson.index(users, page))
+      Ok(json)
     }
   }
 
@@ -33,7 +38,7 @@ object UsersController extends KiwiERPController {
     req.body.validate[CreateForm].fold(
       valid = { j =>
         CreateUserContext(j.name, j.password, j.userType, req.accessToken.user) map { user =>
-          CreatedWithLocation(UserJson.create(user))
+          CreatedWithLocation(Json.toJson(user))
         }
       },
       invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
@@ -42,7 +47,7 @@ object UsersController extends KiwiERPController {
 
   def read(id: Long) = AuthorizedAction.async { req =>
     ReadUserContext(id, req.accessToken.user) map { user =>
-      Ok(UserJson.read(user))
+      Ok(Json.toJson(user))
     }
   }
 
@@ -78,7 +83,7 @@ object UsersController extends KiwiERPController {
     form.bindFromRequest.fold(
       success = { f =>
         AuthenticationContext(f.name, f.password) map { accessToken =>
-          Ok(UserJson.authenticate(accessToken))
+          Ok(Json.toJson(accessToken))
         }
       },
       hasErrors = ef => KiwiERPError.futureResult(new InvalidRequest)

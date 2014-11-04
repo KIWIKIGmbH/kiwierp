@@ -9,13 +9,18 @@ import play.api.libs.json.Reads._
 import play.api.libs.json._
 import utils.exceptions.InvalidRequest
 
-object ProductsController extends KiwiERPController {
+object ProductsController extends KiwiERPController with ProductJson {
 
   def list = AuthorizedAction.async { implicit req =>
     Page(Product.findAll) map { results =>
       val (products, page) = results
+      val json = Json.obj(
+        "count" -> products.size,
+        "page" -> page,
+        "results" -> Json.toJson(products)
+      )
 
-      Ok(ProductJson.index(products, page))
+      Ok(json)
     }
   }
 
@@ -30,7 +35,7 @@ object ProductsController extends KiwiERPController {
     req.body.validate[CreateForm].fold(
       valid = { j =>
         Product.create(j.name, j.description) map { product =>
-          CreatedWithLocation(ProductJson.create(product))
+          CreatedWithLocation(Json.toJson(product))
         }
       },
       invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
@@ -39,7 +44,7 @@ object ProductsController extends KiwiERPController {
 
   def read(id: Long) = AuthorizedAction.async {
     Product.findWithPartsAndInventoriesAndInventoryOrders(id) map { product =>
-      Ok(ProductJson.read(product))
+      Ok(Json.toJson(product))
     }
   }
 

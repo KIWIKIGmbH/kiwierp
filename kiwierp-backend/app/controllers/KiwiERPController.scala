@@ -68,7 +68,7 @@ trait KiwiERPController extends Controller {
 
   override val TODO = AuthorizedAction.async(KiwiERPError.futureResult(new APINotImplemented))
 
-  def CreatedWithLocation[A](json: JsValue,path: Option[String] = None)
+  def CreatedWithLocation[A](json: JsValue, path: Option[String] = None)
                             (implicit req: AuthorizedRequest[A]): Result = {
     val appContext = current.configuration.getString("application.context").get
     val host = req.host
