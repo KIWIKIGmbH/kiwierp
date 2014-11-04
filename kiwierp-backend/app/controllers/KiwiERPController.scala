@@ -3,10 +3,9 @@ package controllers
 import contexts.AuthorizationContext
 import models.AccessToken
 import play.api.Play.current
-import play.api.data.Form
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.concurrent.Promise
-import play.api.libs.json.{Reads, JsValue}
+import play.api.libs.json.JsValue
 import play.api.mvc._
 import utils.exceptions._
 
