@@ -34,7 +34,7 @@ object InventoriesController extends KiwiERPController with InventoryJson {
     implicit val createReads: Reads[CreateForm] = (
       (__ \ 'partsId).read[Long](min[Long](1) keepAnd max[Long](MAX_LONG_NUMBER)) and
       (__ \ 'description)
-        .readNullable[String](maxLength[String](1) keepAnd minLength[String](500)) and
+        .readNullable[String](minLength[String](1) keepAnd maxLength[String](500)) and
       (__ \ 'quantity).read[Int](min[Int](1) keepAnd max[Int](MAX_NUMBER))
     )(CreateForm.apply _)
 
@@ -59,7 +59,7 @@ object InventoriesController extends KiwiERPController with InventoryJson {
 
     implicit val createReads: Reads[UpdateForm] = (
       (__ \ 'description)
-        .readNullable[String](maxLength[String](1) keepAnd minLength[String](500)) and
+        .readNullable[String](minLength[String](1) keepAnd maxLength[String](500)) and
       (__ \ 'quantity).read[Int](min[Int](1) keepAnd max[Int](MAX_NUMBER))
     )(UpdateForm.apply _)
 
