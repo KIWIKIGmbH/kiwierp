@@ -10,6 +10,7 @@ trait InventoryJson extends KiwiERPJson {
       "createdAt" -> dateTimeToString(inventory.createdAt),
       "description" -> inventory.description,
       "id" -> inventory.id,
+      "partsId" -> inventory.partsId,
       "quantity" -> inventory.quantity,
       "updatedAt" -> dateTimeToString(inventory.updatedAt)
     )

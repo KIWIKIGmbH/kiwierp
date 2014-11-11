@@ -12,5 +12,6 @@ libraryDependencies ++= Seq(
   "org.scalikejdbc" %% "scalikejdbc-async" % "0.5.1",
   "org.scalikejdbc" %% "scalikejdbc-async-play-plugin" % "0.5.1",
   "com.github.mauricio" %% "postgresql-async" % "0.2.14",
-  "com.lambdaworks" % "scrypt" % "1.4.0"
+  "com.lambdaworks" % "scrypt" % "1.4.0",
+  "com.wordnik" %% "swagger-play2" % "1.3.10"
 )

@@ -1,3 +1,6 @@
+# Swagger
+GET           /api-docs                        controllers.ApiHelpController.getResources
+
 # Users
 GET           /users                           controllers.UsersController.list
 POST          /users                           controllers.UsersController.create
@@ -5,6 +8,7 @@ GET           /users/:id                       controllers.UsersController.read(
 PATCH         /users/:id                       controllers.UsersController.update(id: Long)
 DELETE        /users/:id                       controllers.UsersController.delete(id: Long)
 POST          /users/authentication            controllers.UsersController.authenticate
+GET           /api-docs/users                  controllers.ApiHelpController.getResource(paths = "/users")
 
 # Products
 GET           /products                        controllers.ProductsController.list
@@ -12,6 +16,7 @@ POST          /products                        controllers.ProductsController.cr
 GET           /products/:id                    controllers.ProductsController.read(id: Long)
 PATCH         /products/:id                    controllers.ProductsController.update(id: Long)
 DELETE        /products/:id                    controllers.ProductsController.delete(id: Long)
+GET           /api-docs/products               controllers.ApiHelpController.getResource(paths = "/products")
 
 # Parts
 GET           /parts                           controllers.PartsController.list
@@ -20,6 +25,7 @@ GET           /parts/:id                       controllers.PartsController.read(
 PATCH         /parts/:id                       controllers.PartsController.update(id: Long)
 DELETE        /parts/:id                       controllers.PartsController.delete(id: Long)
 POST          /parts/:id/classification        controllers.PartsController.classify(id: Long)
+GET           /api-docs/parts                  controllers.ApiHelpController.getResource(paths = "/parts")
 
 # Suppliers
 GET           /suppliers                       controllers.SuppliersController.list
@@ -27,6 +33,7 @@ POST          /suppliers                       controllers.SuppliersController.c
 GET           /suppliers/:id                   controllers.SuppliersController.read(id: Long)
 PATCH         /suppliers/:id                   controllers.SuppliersController.update(id: Long)
 DELETE        /suppliers/:id                   controllers.SuppliersController.delete(id: Long)
+GET           /api-docs/suppliers              controllers.ApiHelpController.getResource(paths = "/suppliers")
 
 # Inventories
 GET           /inventories                     controllers.InventoriesController.list
@@ -34,6 +41,7 @@ POST          /inventories                     controllers.InventoriesController
 GET           /inventories/:id                 controllers.InventoriesController.read(id: Long)
 PATCH         /inventories/:id                 controllers.InventoriesController.update(id: Long)
 DELETE        /inventories/:id                 controllers.InventoriesController.delete(id: Long)
+GET           /api-docs/inventories            controllers.ApiHelpController.getResource(paths = "/inventories")
 
 # InventoryOrders
 GET           /inventoryorders                 controllers.InventoryOrdersController.list
@@ -41,3 +49,4 @@ POST          /inventoryorders                 controllers.InventoryOrdersContro
 GET           /inventoryorders/:id             controllers.InventoryOrdersController.read(id: Long)
 PATCH         /inventoryorders/:id             controllers.InventoryOrdersController.update(id: Long)
 DELETE        /inventoryorders/:id             controllers.InventoryOrdersController.delete(id: Long)
+GET           /api-docs/inventoryorders        controllers.ApiHelpController.getResource(paths = "/inventoryorders")

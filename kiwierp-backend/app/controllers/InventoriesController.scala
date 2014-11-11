@@ -1,5 +1,6 @@
 package controllers
 
+import com.wordnik.swagger.annotations._
 import contexts.{CreateInventoryContext, DeleteInventoryContext}
 import jsons.InventoryJson
 import models.Inventory
@@ -9,8 +10,48 @@ import play.api.libs.json.Reads._
 import play.api.libs.json._
 import utils.exceptions.InvalidRequest
 
+import scala.annotation.meta.field
+
+case class InventoryCreationBody
+(@(ApiModelProperty@field)(required = true) partsId: Long,
+ @(ApiModelProperty@field)(required = false) description: Option[String],
+ @(ApiModelProperty@field)(required = true) quantity: Int)
+
+case class InventoryUpdateBody
+(@(ApiModelProperty@field)(required = false) description: Option[String],
+ @(ApiModelProperty@field)(required = true) quantity: Int)
+
+@Api(
+  value = "/inventories",
+  description = "CRUD and list (search) API of inventory"
+)
 object InventoriesController extends KiwiERPController with InventoryJson {
 
+  @ApiOperation(
+    nickname = "listInventory",
+    value = "find inventories by parts id",
+    notes = "",
+    response = classOf[models.apidocs.Inventories],
+    httpMethod = "GET"
+  )
+  @ApiImplicitParams(
+    Array(
+      new ApiImplicitParam(
+        name = "partsId",
+        value = "Parts id",
+        required = true,
+        paramType = "query",
+        dataType = "Long"
+      ),
+      new ApiImplicitParam(
+        name = "page",
+        value = "Page Number",
+        required = false,
+        paramType = "query",
+        dataType = "Int"
+      )
+    )
+  )
   def list = AuthorizedAction.async { implicit req =>
     req.getQueryString("partsId") filter isId map { partsIdStr =>
       val partsId = partsIdStr.toLong
@@ -28,17 +69,33 @@ object InventoriesController extends KiwiERPController with InventoryJson {
     } getOrElse (throw new InvalidRequest)
   }
 
+  @ApiOperation(
+    nickname = "createInventory",
+    value = "Register inventory",
+    notes = "",
+    response = classOf[models.apidocs.Inventory],
+    httpMethod = "POST"
+  )
+  @ApiImplicitParams(
+    Array(
+      new ApiImplicitParam(
+        name = "body",
+        value = "Request body",
+        required = true,
+        paramType = "body",
+        dataType = "controllers.InventoryCreationBody"
+      )
+    )
+  )
   def create = AuthorizedAction.async(parse.json) { implicit req =>
-    case class CreateForm(partsId: Long, description: Option[String], quantity: Int)
-
-    implicit val createReads: Reads[CreateForm] = (
+    implicit val createReads: Reads[InventoryCreationBody] = (
       (__ \ 'partsId).read[Long](min[Long](1) keepAnd max[Long](MAX_LONG_NUMBER)) and
       (__ \ 'description)
         .readNullable[String](minLength[String](1) keepAnd maxLength[String](500)) and
       (__ \ 'quantity).read[Int](min[Int](1) keepAnd max[Int](MAX_NUMBER))
-    )(CreateForm.apply _)
+    )(InventoryCreationBody.apply _)
 
-    req.body.validate[CreateForm].fold(
+    req.body.validate[InventoryCreationBody].fold(
       valid = { j =>
         CreateInventoryContext(j.partsId, j.description, j.quantity) map { inventory =>
           CreatedWithLocation(Json.toJson(inventory))
@@ -48,22 +105,63 @@ object InventoriesController extends KiwiERPController with InventoryJson {
     )
   }
 
+  @ApiOperation(
+    nickname = "readInventory",
+    value = "Find inventory by ID",
+    notes = "",
+    response = classOf[models.apidocs.Inventory],
+    httpMethod = "GET"
+  )
+  @ApiImplicitParams(
+    Array(
+      new ApiImplicitParam(
+        name = "id",
+        value = "Inventory id",
+        required = true,
+        paramType = "path",
+        dataType = "Long"
+      )
+    )
+  )
   def read(id: Long) = AuthorizedAction.async {
     Inventory.find(id) map { inventory =>
       Ok(Json.toJson(inventory))
     }
   }
 
+  @ApiOperation(
+    nickname = "updateInventory",
+    value = "Edit inventory",
+    notes = "",
+    response = classOf[Void],
+    httpMethod = "PATCH"
+  )
+  @ApiImplicitParams(
+    Array(
+      new ApiImplicitParam(
+        name = "id",
+        value = "Inventory id",
+        required = true,
+        paramType = "path",
+        dataType = "Long"
+      ),
+      new ApiImplicitParam(
+        name = "body",
+        value = "Request body",
+        required = true,
+        paramType = "body",
+        dataType = "controllers.InventoryUpdateBody"
+      )
+    )
+  )
   def update(id: Long) = AuthorizedAction.async(parse.json) { implicit req =>
-    case class UpdateForm(description: Option[String], quantity: Int)
-
-    implicit val createReads: Reads[UpdateForm] = (
+    implicit val updateReads: Reads[InventoryUpdateBody] = (
       (__ \ 'description)
         .readNullable[String](minLength[String](1) keepAnd maxLength[String](500)) and
       (__ \ 'quantity).read[Int](min[Int](1) keepAnd max[Int](MAX_NUMBER))
-    )(UpdateForm.apply _)
+    )(InventoryUpdateBody.apply _)
 
-    req.body.validate[UpdateForm].fold(
+    req.body.validate[InventoryUpdateBody].fold(
       valid = { j =>
         Inventory.save(id)(j.description, j.quantity) map (_ => NoContent)
       },
@@ -71,6 +169,25 @@ object InventoriesController extends KiwiERPController with InventoryJson {
     )
   }
 
+  @ApiOperation(
+    nickname = "deleteInventory",
+    value = "Remove inventory",
+    notes = "",
+    response = classOf[Void],
+    httpMethod = "DELETE",
+    consumes = "text/plain"
+  )
+  @ApiImplicitParams(
+    Array(
+      new ApiImplicitParam(
+        name = "id",
+        value = "Inventory id",
+        required = true,
+        paramType = "path",
+        dataType = "Long"
+      )
+    )
+  )
   def delete(id: Long) = AuthorizedAction.async {
     DeleteInventoryContext(id) map (_ => NoContent)
   }
