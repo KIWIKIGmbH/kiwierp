@@ -30,7 +30,7 @@ object AccessToken extends AccessTokenDAO {
 
   def createByUserId(userId: Long)(implicit session: ADS): Future[AccessToken] = {
     val EXPIRES_IN = 60 * 60 * 24 * 7
-    val TOKEN_TYPE = "Bearer"
+    val TOKEN_TYPE = "bearer"
 
     def generateToken: String = {
       val ALGORITHM = "SHA-256"

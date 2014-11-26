@@ -1,13 +1,16 @@
 # Swagger
 GET           /api-docs                        controllers.ApiHelpController.getResources
 
+# Sessions
+POST          /sessions                        controllers.SessionsController.index
+GET           /api-docs/sessions               controllers.ApiHelpController.getResource(paths = "/sessions")
+
 # Users
 GET           /users                           controllers.UsersController.list
 POST          /users                           controllers.UsersController.create
 GET           /users/:id                       controllers.UsersController.read(id: Long)
 PATCH         /users/:id                       controllers.UsersController.update(id: Long)
 DELETE        /users/:id                       controllers.UsersController.delete(id: Long)
-POST          /users/authentication            controllers.UsersController.authenticate
 GET           /api-docs/users                  controllers.ApiHelpController.getResource(paths = "/users")
 
 # Products

@@ -1,6 +1,6 @@
 package jsons
 
-import models.{AccessToken, User}
+import models.User
 import play.api.libs.json.{JsValue, Json, Writes}
 
 trait UserJson extends KiwiERPJson {
@@ -12,16 +12,6 @@ trait UserJson extends KiwiERPJson {
       "name" -> user.name,
       "userType" -> user.userType,
       "updatedAt" -> dateTimeToString(user.updatedAt)
-    )
-  }
-
-  implicit val authenticationWrites = new Writes[AccessToken] {
-    def writes(accessToken: AccessToken) = Json.obj(
-      "createdAt" -> dateTimeToString(accessToken.createdAt),
-      "expiresIn" -> accessToken.expiresIn,
-      "token" -> accessToken.token,
-      "tokenType" -> accessToken.tokenType,
-      "userId" -> accessToken.userId
     )
   }
 
