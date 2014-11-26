@@ -5,7 +5,7 @@ angular.module('authentication.services')
     function ($http, endpointRoot, redirectService, accessTokenService) {
       return {
         login: function (name, password) {
-          var url = endpointRoot + '/users/authentication';
+          var url = endpointRoot + '/sessions';
           var data = {
             name: name,
             password: password
