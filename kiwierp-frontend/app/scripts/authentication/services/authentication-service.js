@@ -7,8 +7,9 @@ angular.module('authentication.services')
         login: function (name, password) {
           var url = endpointRoot + '/sessions';
           var data = {
-            name: name,
-            password: password
+            username: name,
+            password: password,
+            grant_type: 'password'
           };
 
           return $http.post(url, angular.element.param(data), {

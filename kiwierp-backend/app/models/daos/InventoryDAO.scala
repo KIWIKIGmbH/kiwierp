@@ -1,6 +1,6 @@
 package models.daos
 
-import models.{Inventory, Parts}
+import models.{Inventory, Component}
 import org.joda.time.DateTime
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scalikejdbc._
@@ -14,7 +14,7 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
 
   override val columnNames = Seq(
     "id",
-    "parts_id",
+    "component_id",
     "description",
     "quantity",
     "created_at",
@@ -25,7 +25,7 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
   def apply(i: ResultName[Inventory])(rs: WRS): Inventory =
     Inventory(
       rs.long(i.id),
-      rs.long(i.partsId),
+      rs.long(i.componentId),
       rs.stringOpt(i.description),
       rs.int(i.quantity),
       rs.jodaDateTime(i.createdAt),
@@ -33,27 +33,27 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
       rs.jodaDateTimeOpt(i.deletedAt)
     )
 
-  def apply(i: SyntaxProvider[Inventory], pa: SyntaxProvider[Parts])(rs: WRS): Inventory =
-    apply(i)(rs).copy(parts = Parts.opt(pa)(rs))
+  def apply(i: SyntaxProvider[Inventory], co: SyntaxProvider[Component])(rs: WRS): Inventory =
+    apply(i)(rs).copy(component = Component.opt(co)(rs))
 
   lazy val s = syntax("i")
 
   val i = s
 
-  private val pa = Parts.pa
+  private val co = Component.co
 
-  def findAllByPartsId(partsId: Long)
-                      (page: Int = DEFAULT_PAGE)
-                      (implicit s: ADS = AsyncDB.sharedSession): Future[List[Inventory]] = withSQL {
+  def findAllByComponentId(componentId: Long)
+                          (page: Int = DEFAULT_PAGE)
+                          (implicit s: ADS = AsyncDB.sharedSession): Future[List[Inventory]] = withSQL {
     selectFrom(Inventory as i)
-      .where.eq(i.partsId, partsId)
+      .where.eq(i.componentId, componentId)
       .and.append(isNotDeleted)
       .orderBy(i.id)
       .limit(DEFAULT_LIMIT)
       .offset((page - 1) * DEFAULT_LIMIT)
   } mapListFuture apply(i)
 
-  def create(partsId: Long,
+  def create(componentId: Long,
              description: Option[String],
              quantity: Int)(implicit s: ADS = AsyncDB.sharedSession): Future[Inventory] = {
     val createdAt = DateTime.now
@@ -62,7 +62,7 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
     updateFutureAndReturnGeneratedKey {
       insertInto(Inventory)
         .namedValues(
-          column.partsId -> partsId,
+          column.componentId -> componentId,
           column.description -> description,
           column.quantity -> quantity,
           column.createdAt -> createdAt,
@@ -70,21 +70,21 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
         )
         .returningId
     } map { id =>
-      Inventory(id, partsId, description, quantity, createdAt, updatedAt)
+      Inventory(id, componentId, description, quantity, createdAt, updatedAt)
     }
   }
 
-  def findWithParts(id: Long, partsId: Long)
-                   (implicit s: ADS = AsyncDB.sharedSession): Future[Inventory] = withSQL {
+  def findWithComponent(id: Long, componentId: Long)
+                       (implicit s: ADS = AsyncDB.sharedSession): Future[Inventory] = withSQL {
     selectFrom[Inventory](Inventory as i)
-      .innerJoin(Parts as pa).on(
+      .innerJoin(Component as co).on(
         sqls
-          .eq(i.partsId, pa.id)
-          .and.isNull(pa.deletedAt)
+          .eq(i.componentId, co.id)
+          .and.isNull(co.deletedAt)
       )
       .where.eq(i.id, id)
-      .and.eq(i.partsId, partsId)
-  } mapSingleFuture apply(i, pa)
+      .and.eq(i.componentId, componentId)
+  } mapSingleFuture apply(i, co)
 
   def save(id: Long)
           (description: Option[String], quantity: Int)
@@ -110,23 +110,23 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
       .and.isNull(column.deletedAt)
   }
 
-  def destroyAllByPartsId(partsId: Long, deletedAt: DateTime = DateTime.now)
+  def destroyAllByComponentId(componentId: Long, deletedAt: DateTime = DateTime.now)
                          (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
     update(Inventory)
       .set(
         column.deletedAt -> deletedAt
       )
-      .where.eq(column.partsId, partsId)
+      .where.eq(column.componentId, componentId)
       .and.isNull(column.deletedAt)
   }
 
-  def destroyAllByPartsIds(partsIds: Seq[Long], deletedAt: DateTime = DateTime.now)
-                          (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
+  def destroyAllByComponentIds(componentIds: Seq[Long], deletedAt: DateTime = DateTime.now)
+                              (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
     update(Inventory)
       .set(
         column.deletedAt -> deletedAt
       )
-      .where.in(column.partsId, partsIds)
+      .where.in(column.componentId, componentIds)
       .and.isNull(column.deletedAt)
   }
 

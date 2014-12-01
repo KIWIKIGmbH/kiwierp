@@ -1,38 +1,38 @@
 package contexts
 
-import models.{Inventory, Parts}
+import models.{Inventory, Component}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import roles.{ClassifiedParts, QuantityAddedInventory}
+import roles.{ClassifiedComponent, QuantityAddedInventory}
 import scalikejdbc.async.{AsyncDB, AsyncDBSession}
 
 import scala.concurrent.Future
 
-class ClassifyPartsContext private
-(parts: Parts,
+class ClassifyComponentContext private
+(Component: Component,
  classifiedQuantity: Int)(implicit tx:AsyncDBSession) {
 
-  private val classifiedParts = new Parts(parts) with ClassifiedParts
+  private val classifiedComponent = new Component(Component) with ClassifiedComponent
 
-  classifiedParts.checkUnclassifiedQuantity(classifiedQuantity)
+  classifiedComponent.checkUnclassifiedQuantity(classifiedQuantity)
 
   private def classify(inventory: Inventory): Future[Int] = {
     val quantityAddedInventory = new Inventory(inventory) with QuantityAddedInventory
 
-    classifiedParts.classified(quantityAddedInventory, classifiedQuantity)
+    classifiedComponent.classified(quantityAddedInventory, classifiedQuantity)
   }
 
   private def classifyAndCreateInventory(inventoryDescription: Option[String]): Future[Inventory] =
-    classifiedParts.classifiedAndAddInventory(classifiedQuantity, inventoryDescription)
+    classifiedComponent.classifiedAndAddInventory(classifiedQuantity, inventoryDescription)
 
 }
 
-object ClassifyPartsContext extends KiwiERPContext {
+object ClassifyComponentContext extends KiwiERPContext {
 
   def apply(id: Long, classifiedQuantity: Int, inventoryId: Long): Future[Int] =
     AsyncDB localTx { implicit tx =>
-      Inventory.findWithParts(inventoryId, id) flatMap { inventory =>
-        val parts = inventory.parts.get
-        val cxt = new ClassifyPartsContext(parts, classifiedQuantity)
+      Inventory.findWithComponent(inventoryId, id) flatMap { inventory =>
+        val component = inventory.component.get
+        val cxt = new ClassifyComponentContext(component, classifiedQuantity)
 
         cxt.classify(inventory)
       }
@@ -42,8 +42,8 @@ object ClassifyPartsContext extends KiwiERPContext {
             classifiedQuantity: Int,
             inventoryDescription: Option[String]): Future[Inventory] =
     AsyncDB localTx { implicit tx =>
-      Parts.find(id) flatMap { parts =>
-        val cxt = new ClassifyPartsContext(parts, classifiedQuantity)
+      Component.find(id) flatMap { Component =>
+        val cxt = new ClassifyComponentContext(Component, classifiedQuantity)
 
         cxt.classifyAndCreateInventory(inventoryDescription)
       }

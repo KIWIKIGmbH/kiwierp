@@ -5,7 +5,7 @@ import org.joda.time.DateTime
 
 import scala.annotation.meta.field
 
-case class PartsWithRelations
+case class ComponentWithRelations
 (@(ApiModelProperty @field)(required = true) createdAt: DateTime,
  @(ApiModelProperty @field)(required = false) description: Option[String],
  @(ApiModelProperty @field)(required = true) id: Long,
@@ -15,4 +15,4 @@ case class PartsWithRelations
  @(ApiModelProperty @field)(required = true) unclassifiedQuantity: Int,
  @(ApiModelProperty @field)(required = true) updatedAt: DateTime,
  @(ApiModelProperty @field)(required = true) inventories: Seq[Inventory],
- @(ApiModelProperty @field)(required = true) inventoryOrders: Seq[Order])
+ @(ApiModelProperty @field)(required = true) orders: Seq[Order])

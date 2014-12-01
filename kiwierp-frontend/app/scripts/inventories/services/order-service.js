@@ -3,7 +3,7 @@
 angular.module('inventory.services')
   .factory('orderService', ['formatDate', 'apiService',
     function (formatDate, apiService) {
-      var baseResource = '/inventoryorders';
+      var baseResource = '/inventory-management/orders';
 
       var service = {
         selectDelivered: function (orders) {
@@ -27,7 +27,7 @@ angular.module('inventory.services')
 
         add: function (order) {
           var data = {
-            partsId: order.partsId,
+            componentId: order.componentId,
             supplierId: order.supplierId,
             quantity: order.quantity,
             orderedDate: formatDate(order.orderedDate)

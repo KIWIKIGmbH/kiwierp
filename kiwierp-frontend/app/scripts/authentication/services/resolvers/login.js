@@ -7,15 +7,14 @@ angular.module('authentication.services')
         return login();
       }],
 
-    $get: ['accessTokenService', 'userService', 'redirectService',
-      function (accessTokenService, userService, redirectService) {
+    $get: ['accessTokenService', 'sessionService', 'redirectService',
+      function (accessTokenService, sessionService, redirectService) {
         return function () {
-          var userId = accessTokenService.userId();
           var returnNullFunc = function () {
             return null;
           };
 
-          return !!userId ? userService.show(userId).then(redirectService.toIndexPage, returnNullFunc) : null;
+          return accessTokenService.token() ? sessionService.show().then(redirectService.toIndexPage, returnNullFunc) : null;
         };
       }]
   });

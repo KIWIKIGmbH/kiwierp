@@ -1,6 +1,6 @@
 package roles
 
-import models.{InventoryOrder, Parts, Supplier}
+import models.{Order, Component, Supplier}
 import org.joda.time.DateTime
 import scalikejdbc.async.AsyncDBSession
 
@@ -10,12 +10,12 @@ trait OrderReceivedSupplier {
 
   this: Supplier =>
 
-  def receiveOrder(orderedParts: Parts with OrderedParts,
+  def receiveOrder(orderedComponent: Component with OrderedComponent,
                    quantity: Int, orderedDate: DateTime)
-                  (implicit s: AsyncDBSession): Future[InventoryOrder] = {
+                  (implicit s: AsyncDBSession): Future[Order] = {
     val INITIAL_STATUS = "ordered"
 
-    InventoryOrder.create(orderedParts.id, id, quantity, orderedDate, INITIAL_STATUS)
+    Order.create(orderedComponent.id, id, quantity, orderedDate, INITIAL_STATUS)
   }
 
 }

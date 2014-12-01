@@ -1,35 +1,35 @@
 package contexts
 
-import models.{Parts, Product}
+import models.{Component, Product}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import roles.PartsAddedProduct
+import roles.ComponentAddedProduct
 import scalikejdbc.async.{AsyncDB, AsyncDBSession}
 import utils.exceptions.InvalidRequest
 
 import scala.concurrent.Future
 
-class CreatePartsContext private
+class CreateComponentContext private
 (product: Product,
  name: String,
  description: Option[String],
  neededQuantity: Int)(implicit s: AsyncDBSession) {
 
-  private def create(): Future[Parts] = {
-    val partsAddedProduct = new Product(product) with PartsAddedProduct
+  private def create(): Future[Component] = {
+    val componentAddedProduct = new Product(product) with ComponentAddedProduct
 
-    partsAddedProduct.addParts(name, description, neededQuantity)
+    componentAddedProduct.addComponent(name, description, neededQuantity)
   }
 
 }
 
-object CreatePartsContext extends KiwiERPContext {
+object CreateComponentContext extends KiwiERPContext {
 
   def apply(productId: Long,
             name: String,
             description: Option[String],
-            neededQuantity: Int): Future[Parts] = AsyncDB withPool { implicit s =>
+            neededQuantity: Int): Future[Component] = AsyncDB withPool { implicit s =>
     Product.find(productId) flatMap { product =>
-      val cxt = new CreatePartsContext(product, name, description, neededQuantity)
+      val cxt = new CreateComponentContext(product, name, description, neededQuantity)
 
       cxt.create()
     } recover handleNotFound(new InvalidRequest)

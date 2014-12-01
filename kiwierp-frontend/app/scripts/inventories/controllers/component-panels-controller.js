@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('inventory.controllers')
-  .controller('PartsPanelsCtrl', ['$scope', 'partsService', 'inventoryService', 'orderService', 'supplierService', 'formService',
-    function ($scope, partsService, inventoryService, orderService, supplierService, formService) {
+  .controller('ComponentPanelsCtrl', ['$scope', 'componentService', 'inventoryService', 'orderService', 'supplierService', 'formService',
+    function ($scope, componentService, inventoryService, orderService, supplierService, formService) {
       $scope.totalQuantity = function (results) {
         var quantitySum = 0;
 
@@ -13,37 +13,37 @@ angular.module('inventory.controllers')
         return quantitySum;
       };
 
-      $scope.openEditPartsForm = function (parts) {
+      $scope.openEditComponentForm = function (component) {
         var modalInstance = null;
 
-        $scope.partsFormInputs = {
-          id: parts.id,
-          name: parts.name,
-          description: parts.description,
-          neededQuantity: parts.neededQuantity
+        $scope.componentFormInputs = {
+          id: component.id,
+          name: component.name,
+          description: component.description,
+          neededQuantity: component.neededQuantity
         };
 
-        $scope.partsFormHeader = 'Edit Parts';
+        $scope.componentFormHeader = 'Edit Component';
 
-        $scope.isAddPartsForm = false;
+        $scope.isAddComponentForm = false;
 
-        $scope.editParts = function () {
-          partsService.edit($scope.partsFormInputs)
+        $scope.editComponent = function () {
+          componentService.edit($scope.componentFormInputs)
             .then(function () {
               $scope.reloadProduct();
               modalInstance.close();
             });
         };
 
-        $scope.removePartsAlert = function () {
+        $scope.removeComponentAlert = function () {
           var removeAlertInstance = null;
 
           modalInstance.close();
 
-          $scope.removeAlertMessage = 'Are you sure to remove the parts?';
+          $scope.removeAlertMessage = 'Are you sure to remove the Component?';
 
           $scope.removeAlertFunc = function () {
-            partsService.remove($scope.partsFormInputs.id)
+            componentService.remove($scope.componentFormInputs.id)
               .then(function () {
                 $scope.reloadProduct();
                 removeAlertInstance.close();
@@ -54,16 +54,16 @@ angular.module('inventory.controllers')
         };
 
         modalInstance = formService.openForm({
-          templateUrl: '/views/inventories/modals/parts-form.html',
+          templateUrl: '/views/inventories/modals/component-form.html',
           scope: $scope
         });
       };
 
-      $scope.openAddInventoryForm = function (parts) {
+      $scope.openAddInventoryForm = function (component) {
         var modalInstance = null;
 
         $scope.inventoryFormInputs = {
-          partsId: parts.id
+          componentId: component.id
         };
 
         $scope.inventoryFormHeader = 'Add Inventory';
@@ -84,7 +84,7 @@ angular.module('inventory.controllers')
         });
       };
 
-      $scope.openAddOrderForm = function (parts) {
+      $scope.openAddOrderForm = function (component) {
         var modalInstance = null;
 
         supplierService.search()
@@ -93,7 +93,7 @@ angular.module('inventory.controllers')
           });
 
         $scope.orderFormInputs = {
-          partsId: parts.id,
+          componentId: component.id,
           orderedDate: new Date()
         };
 
@@ -111,19 +111,19 @@ angular.module('inventory.controllers')
         });
       };
 
-      $scope.openClassifyPartsForm = function (parts) {
+      $scope.openClassifyComponentForm = function (component) {
         var modalInstance = null;
 
-        $scope.classifyPartsFormInputs = {
-          partsId: parts.id
+        $scope.classifyComponentFormInputs = {
+          componentId: component.id
         };
 
-        $scope.parts = parts;
+        $scope.component = component;
 
-        $scope.inventories = $scope.parts.inventories;
+        $scope.inventories = $scope.component.inventories;
 
-        $scope.classifyParts = function () {
-          partsService.classify($scope.classifyPartsFormInputs)
+        $scope.classifyComponent = function () {
+          componentService.classify($scope.classifyComponentFormInputs)
             .then(function () {
               $scope.reloadProduct();
               modalInstance.close();
@@ -131,7 +131,7 @@ angular.module('inventory.controllers')
         };
 
         modalInstance = formService.openForm({
-          templateUrl: '/views/inventories/modals/classify-parts-form.html',
+          templateUrl: '/views/inventories/modals/classify-Component-form.html',
           scope: $scope
         });
       };

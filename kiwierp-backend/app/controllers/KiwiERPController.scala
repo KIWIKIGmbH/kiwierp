@@ -52,7 +52,7 @@ trait KiwiERPController extends Controller {
 
         val err = KiwiERPError.futureResult(new InvalidRequest)
 
-        req.getQueryString("token") map (authorize(_) flatMap result) getOrElse err
+        req.getQueryString("access_token") map (authorize(_) flatMap result) getOrElse err
       }
 
     def async(block: AuthorizedRequest[AnyContent] => Future[Result]): Action[AnyContent] =

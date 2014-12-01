@@ -3,7 +3,7 @@
 angular.module('common.services')
   .factory('accessTokenService', ['storage',
     function (storage) {
-      var key = 'accessToken';
+      var key = '__keat';
 
       var prop = function (propName) {
         var accessToken = storage.get(key);
@@ -26,11 +26,7 @@ angular.module('common.services')
         },
 
         token: function () {
-          return prop('token');
-        },
-
-        userId: function () {
-          return prop('userId');
+          return prop('access_token');
         }
-      };
+     };
     }]);

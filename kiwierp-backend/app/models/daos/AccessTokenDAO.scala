@@ -17,7 +17,8 @@ trait AccessTokenDAO extends KiwiERPDAO[AccessToken] {
     "user_id",
     "expires_in",
     "token_type",
-    "created_at"
+    "created_at",
+    "deleted_at"
   )
 
   def apply(a: ResultName[AccessToken])(rs: WRS): AccessToken =
@@ -26,7 +27,8 @@ trait AccessTokenDAO extends KiwiERPDAO[AccessToken] {
       rs.long(a.userId),
       rs.int(a.expiresIn),
       rs.string(a.tokenType),
-      rs.jodaDateTime(a.createdAt)
+      rs.jodaDateTime(a.createdAt),
+      rs.jodaDateTimeOpt(a.deletedAt)
     )
 
   def apply(a: SyntaxProvider[AccessToken], u: SyntaxProvider[User])(rs: WRS): AccessToken =
@@ -58,6 +60,13 @@ trait AccessTokenDAO extends KiwiERPDAO[AccessToken] {
     }
   }
 
+  def findByUserId(userId: Long)
+                  (implicit s: ADS = AsyncDB.sharedSession): Future[Option[AccessToken]] = withSQL {
+    selectFrom[AccessToken](AccessToken as a)
+      .where.eq(a.userId, userId)
+      .and.append(isNotDeleted)
+  }.map(apply(a)).single().future
+
   def findWithUserByToken(token: String)
                          (implicit s: ADS = AsyncDB.sharedSession): Future[AccessToken] = withSQL {
     selectFrom[AccessToken](AccessToken as a)
@@ -68,10 +77,14 @@ trait AccessTokenDAO extends KiwiERPDAO[AccessToken] {
       .where.eq(a.token, token)
   } mapSingleFuture apply(a, u)
 
-  def destroyByUserId(userId: Long)
-                     (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
-    deleteFrom(AccessToken)
-      .where.eq(column.userId, userId)
+  def destroyByToken(token: String, deletedAt: DateTime = DateTime.now)
+                    (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
+    update(AccessToken)
+      .set(
+        column.deletedAt -> deletedAt
+      )
+      .where.eq(column.token, token)
+      .and.isNull(column.deletedAt)
   }
 
 }

@@ -1,6 +1,6 @@
 package models.daos
 
-import models.{Inventory, Parts}
+import models.{Inventory, Component}
 import org.joda.time.DateTime
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scalikejdbc._
@@ -8,9 +8,9 @@ import scalikejdbc.async._
 
 import scala.concurrent.Future
 
-trait PartsDAO extends KiwiERPDAO[Parts] {
+trait ComponentDAO extends KiwiERPDAO[Component] {
 
-  override val tableName = "parts"
+  override val tableName = "components"
 
   override val columnNames = Seq(
     "id",
@@ -24,35 +24,35 @@ trait PartsDAO extends KiwiERPDAO[Parts] {
     "deleted_at"
   )
 
-  def apply(pa: ResultName[Parts])(rs: WRS): Parts =
-    Parts(
-      rs.long(pa.id),
-      rs.long(pa.productId),
-      rs.string(pa.name),
-      rs.stringOpt(pa.description),
-      rs.int(pa.neededQuantity),
-      rs.int(pa.unclassifiedQuantity),
-      rs.jodaDateTime(pa.createdAt),
-      rs.jodaDateTime(pa.updatedAt),
-      rs.jodaDateTimeOpt(pa.deletedAt)
+  def apply(co: ResultName[Component])(rs: WRS): Component =
+    Component(
+      rs.long(co.id),
+      rs.long(co.productId),
+      rs.string(co.name),
+      rs.stringOpt(co.description),
+      rs.int(co.neededQuantity),
+      rs.int(co.unclassifiedQuantity),
+      rs.jodaDateTime(co.createdAt),
+      rs.jodaDateTime(co.updatedAt),
+      rs.jodaDateTimeOpt(co.deletedAt)
     )
 
-  lazy val s = syntax("pa")
+  lazy val s = syntax("co")
 
-  val pa = s
+  val co = s
 
   private val i = Inventory.i
 
   def create(productId: Long,
              name: String,
              description: Option[String],
-             neededQuantity: Int)(implicit s: ADS = AsyncDB.sharedSession): Future[Parts] = {
+             neededQuantity: Int)(implicit s: ADS = AsyncDB.sharedSession): Future[Component] = {
     val NOTHING_UNCLASSIFIED = 0
     val createdAt = DateTime.now
     val updatedAt = createdAt
 
     updateFutureAndReturnGeneratedKey {
-      insertInto(Parts)
+      insertInto(Component)
         .namedValues(
           column.productId -> productId,
           column.name -> name,
@@ -64,25 +64,25 @@ trait PartsDAO extends KiwiERPDAO[Parts] {
         )
         .returningId
     } map { id =>
-      Parts(id, productId, name, description, neededQuantity, NOTHING_UNCLASSIFIED, createdAt, updatedAt)
+      Component(id, productId, name, description, neededQuantity, NOTHING_UNCLASSIFIED, createdAt, updatedAt)
     }
   }
 
   def findAllByProductId(productId: Long)
                         (page: Int = DEFAULT_PAGE)
-                        (implicit s: ADS = AsyncDB.sharedSession): Future[List[Parts]] = withSQL {
-    selectFrom(Parts as pa)
-      .where.eq(pa.productId, productId)
+                        (implicit s: ADS = AsyncDB.sharedSession): Future[List[Component]] = withSQL {
+    selectFrom(Component as co)
+      .where.eq(co.productId, productId)
       .and.append(isNotDeleted)
-      .orderBy(pa.id)
+      .orderBy(co.id)
       .limit(DEFAULT_LIMIT)
       .offset((page - 1) * DEFAULT_LIMIT)
-  } mapListFuture apply(pa)
+  } mapListFuture apply(co)
 
   def save(id: Long)
           (name: String, description: Option[String], neededQuantity: Int)
           (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFutureOrNotFound {
-    update(Parts)
+    update(Component)
       .set(
         column.name -> name,
         column.description -> description,
@@ -97,7 +97,7 @@ trait PartsDAO extends KiwiERPDAO[Parts] {
                                 (unclassifiedQuantity: Int)
                                 (implicit s: ADS = AsyncDB.sharedSession): Future[Int] =
     updateFuture {
-      update(Parts)
+      update(Component)
         .set(
           column.unclassifiedQuantity -> unclassifiedQuantity
         )
@@ -107,7 +107,7 @@ trait PartsDAO extends KiwiERPDAO[Parts] {
 
   def destroyAllByProductId(productId: Long, deletedAt: DateTime = DateTime.now)
                            (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
-    update(Parts)
+    update(Component)
       .set(
         column.deletedAt -> deletedAt
       )

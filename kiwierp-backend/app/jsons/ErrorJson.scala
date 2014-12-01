@@ -7,7 +7,7 @@ object ErrorJson {
 
   def apply(e: KiwiERPException) = Json.obj(
     "error" -> e.error,
-    "message" -> e.message,
+    "error_description" -> e.message,
     "status" -> e.status
   )
 

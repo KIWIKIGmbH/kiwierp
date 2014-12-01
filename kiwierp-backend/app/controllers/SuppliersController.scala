@@ -22,7 +22,7 @@ case class SupplierUpdateBody
  @(ApiModelProperty @field)(required = true) phoneNumber: String)
 
 @Api(
-  value = "/suppliers",
+  value = "/inventory-management/suppliers",
   description = "CRUD and list (search) API of supplier"
 )
 object SuppliersController extends KiwiERPController with SupplierJson {

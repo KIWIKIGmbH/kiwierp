@@ -1,9 +1,10 @@
 package controllers
 
+import com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException
 import com.wordnik.swagger.annotations._
-import contexts.{ClassifyPartsContext, CreatePartsContext, DeletePartsContext}
-import jsons.PartsJson
-import models.Parts
+import contexts.{ClassifyComponentContext, CreateComponentContext, DeleteComponentContext}
+import jsons.ComponentJson
+import models.Component
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
@@ -12,33 +13,33 @@ import utils.exceptions.InvalidRequest
 
 import scala.annotation.meta.field
 
-case class PartsCreationBody
+case class ComponentCreationBody
 (@(ApiModelProperty @field)(required = true) productId: Long,
  @(ApiModelProperty @field)(required = true) name: String,
  @(ApiModelProperty @field)(required = false) description: Option[String],
  @(ApiModelProperty @field)(required = true) neededQuantity: Int)
 
-case class PartsUpdateBody
+case class ComponentUpdateBody
 (@(ApiModelProperty @field)(required = true) name: String,
  @(ApiModelProperty @field)(required = false) description: Option[String],
  @(ApiModelProperty @field)(required = true) neededQuantity: Int)
 
-case class PartsClassificationBody
+case class ComponentClassificationBody
 (@(ApiModelProperty @field)(required = true) classifiedQuantity: Int,
  @(ApiModelProperty @field)(required = false) inventoryId: Option[Long],
  @(ApiModelProperty @field)(required = false) inventoryDescription: Option[String])
 
 @Api(
-  value = "/parts",
-  description = "CRUD and list (search) API of parts"
+  value = "/inventory-management/components",
+  description = "CRUD and list (search) API of components"
 )
-object PartsController extends KiwiERPController with PartsJson {
+object ComponentsController extends KiwiERPController with ComponentJson {
 
   @ApiOperation(
-    nickname = "listParts",
-    value = "find parts by product id",
+    nickname = "listComponent",
+    value = "find Component by product id",
     notes = "",
-    response = classOf[models.apidocs.PartsSeq],
+    response = classOf[models.apidocs.Components],
     httpMethod = "GET"
   )
   @ApiImplicitParams(
@@ -63,12 +64,12 @@ object PartsController extends KiwiERPController with PartsJson {
     req.getQueryString("productId") filter isId map { productIdStr =>
       val productId = productIdStr.toLong
 
-      Page(Parts.findAllByProductId(productId)) map { results =>
-        val (partsList, page) = results
+      Page(Component.findAllByProductId(productId)) map { results =>
+        val (components, page) = results
         val json = Json.obj(
-          "count" -> partsList.size,
+          "count" -> components.size,
           "page" -> page,
-          "results" -> Json.toJson(partsList)
+          "results" -> Json.toJson(components)
         )
 
         Ok(json)
@@ -77,10 +78,10 @@ object PartsController extends KiwiERPController with PartsJson {
   }
 
   @ApiOperation(
-    nickname = "createParts",
-    value = "Register parts",
+    nickname = "createComponent",
+    value = "Register Component",
     notes = "",
-    response = classOf[models.apidocs.Parts],
+    response = classOf[models.apidocs.Component],
     httpMethod = "POST"
   )
   @ApiImplicitParams(
@@ -90,23 +91,25 @@ object PartsController extends KiwiERPController with PartsJson {
         value = "Request body",
         required = true,
         paramType = "body",
-        dataType = "controllers.PartsCreationBody"
+        dataType = "controllers.ComponentCreationBody"
       )
     )
   )
   def create = AuthorizedAction.async(parse.json) { implicit req =>
-    implicit val createReads: Reads[PartsCreationBody] = (
+    implicit val createReads: Reads[ComponentCreationBody] = (
       (__ \ 'productId).read[Long](min[Long](1) keepAnd max[Long](MAX_LONG_NUMBER)) and
       (__ \ 'name).read[String](minLength[String](1) keepAnd maxLength[String](120)) and
       (__ \ 'description)
         .readNullable[String](minLength[String](1) keepAnd maxLength[String](500)) and
       (__ \ 'neededQuantity).read[Int](min[Int](1) keepAnd max[Int](MAX_NUMBER))
-    )(PartsCreationBody.apply _)
+    )(ComponentCreationBody.apply _)
 
-    req.body.validate[PartsCreationBody].fold(
+    req.body.validate[ComponentCreationBody].fold(
       valid = { j =>
-        CreatePartsContext(j.productId, j.name, j.description, j.neededQuantity) map { parts =>
-          CreatedWithLocation(Json.toJson(parts))
+        CreateComponentContext(j.productId, j.name, j.description, j.neededQuantity) map { Component =>
+          CreatedWithLocation(Json.toJson(Component))
+        } recover {
+          case e: GenericDatabaseException => throw new InvalidRequest
         }
       },
       invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
@@ -114,17 +117,17 @@ object PartsController extends KiwiERPController with PartsJson {
   }
 
   @ApiOperation(
-    nickname = "readParts",
-    value = "Find parts by ID",
+    nickname = "readComponent",
+    value = "Find Component by ID",
     notes = "",
-    response = classOf[models.apidocs.Parts],
+    response = classOf[models.apidocs.Component],
     httpMethod = "GET"
   )
   @ApiImplicitParams(
     Array(
       new ApiImplicitParam(
         name = "id",
-        value = "Parts id",
+        value = "Component id",
         required = true,
         paramType = "path",
         dataType = "Long"
@@ -132,14 +135,14 @@ object PartsController extends KiwiERPController with PartsJson {
     )
   )
   def read(id: Long) = AuthorizedAction.async {
-    Parts.find(id) map { parts =>
-      Ok(Json.toJson(parts))
+    Component.find(id) map { Component =>
+      Ok(Json.toJson(Component))
     }
   }
 
   @ApiOperation(
-    nickname = "updateParts",
-    value = "Edit parts",
+    nickname = "updateComponent",
+    value = "Edit Component",
     notes = "",
     response = classOf[Void],
     httpMethod = "PATCH"
@@ -148,7 +151,7 @@ object PartsController extends KiwiERPController with PartsJson {
     Array(
       new ApiImplicitParam(
         name = "id",
-        value = "Parts id",
+        value = "Component id",
         required = true,
         paramType = "path",
         dataType = "Long"
@@ -158,29 +161,31 @@ object PartsController extends KiwiERPController with PartsJson {
         value = "Request body",
         required = true,
         paramType = "body",
-        dataType = "controllers.PartsUpdateBody"
+        dataType = "controllers.ComponentUpdateBody"
       )
     )
   )
   def update(id: Long) = AuthorizedAction.async(parse.json) { implicit req =>
-    implicit val updateReads: Reads[PartsUpdateBody] = (
+    implicit val updateReads: Reads[ComponentUpdateBody] = (
       (__ \ 'name).read[String](minLength[String](1) keepAnd maxLength[String](120)) and
       (__ \ 'description)
         .readNullable[String](minLength[String](1) keepAnd maxLength[String](500)) and
       (__ \ 'neededQuantity).read[Int](min[Int](1) keepAnd max[Int](MAX_NUMBER))
-    )(PartsUpdateBody.apply _)
+    )(ComponentUpdateBody.apply _)
 
-    req.body.validate[PartsUpdateBody].fold(
+    req.body.validate[ComponentUpdateBody].fold(
       valid = { j =>
-        Parts.save(id)(j.name, j.description, j.neededQuantity) map (_ => NoContent)
+        Component.save(id)(j.name, j.description, j.neededQuantity) map (_ => NoContent) recover {
+          case e: GenericDatabaseException => throw new InvalidRequest
+        }
       },
       invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
     )
   }
 
   @ApiOperation(
-    nickname = "deleteParts",
-    value = "Remove parts",
+    nickname = "deleteComponent",
+    value = "Remove Component",
     notes = "",
     response = classOf[Void],
     httpMethod = "DELETE",
@@ -190,7 +195,7 @@ object PartsController extends KiwiERPController with PartsJson {
     Array(
       new ApiImplicitParam(
         name = "id",
-        value = "Parts id",
+        value = "Component id",
         required = true,
         paramType = "path",
         dataType = "Long"
@@ -198,12 +203,12 @@ object PartsController extends KiwiERPController with PartsJson {
     )
   )
   def delete(id: Long) = AuthorizedAction.async {
-    DeletePartsContext(id) map (_ => NoContent)
+    DeleteComponentContext(id) map (_ => NoContent)
   }
 
   @ApiOperation(
-    nickname = "classifyParts",
-    value = "Classify parts into inventory",
+    nickname = "classifyComponent",
+    value = "Classify Component into inventory",
     notes = "Require either inventoryId or inventoryDescription on the request parameters.",
     response = classOf[models.apidocs.Inventory],
     httpMethod = "POST"
@@ -212,7 +217,7 @@ object PartsController extends KiwiERPController with PartsJson {
     Array(
       new ApiImplicitParam(
         name = "id",
-        value = "Parts id",
+        value = "Component id",
         required = true,
         paramType = "path",
         dataType = "Long"
@@ -222,28 +227,28 @@ object PartsController extends KiwiERPController with PartsJson {
         value = "Request body",
         required = true,
         paramType = "body",
-        dataType = "controllers.PartsClassificationBody"
+        dataType = "controllers.ComponentClassificationBody"
       )
     )
   )
   def classify(id: Long) = AuthorizedAction.async(parse.json) { implicit req =>
-    implicit val classifyReads: Reads[PartsClassificationBody] = (
+    implicit val classifyReads: Reads[ComponentClassificationBody] = (
       (__ \ 'classifiedQuantity).read[Int](min[Int](1) keepAnd max[Int](MAX_NUMBER)) and
       (__ \ 'inventoryId).readNullable[Long](min[Long](1) keepAnd max[Long](MAX_LONG_NUMBER)) and
       (__ \ 'inventoryDescription)
         .readNullable[String](minLength[String](1) keepAnd maxLength[String](500))
-    )(PartsClassificationBody.apply _)
+    )(ComponentClassificationBody.apply _)
 
-    req.body.validate[PartsClassificationBody].fold(
+    req.body.validate[ComponentClassificationBody].fold(
       valid = { j =>
         j.inventoryId map { inventoryId =>
           if (j.inventoryDescription.isEmpty) {
-            ClassifyPartsContext(id, j.classifiedQuantity, inventoryId) map (_ => NoContent)
+            ClassifyComponentContext(id, j.classifiedQuantity, inventoryId) map (_ => NoContent)
           } else {
             throw new InvalidRequest
           }
         } getOrElse {
-          ClassifyPartsContext(id, j.classifiedQuantity, j.inventoryDescription) map { inventory =>
+          ClassifyComponentContext(id, j.classifiedQuantity, j.inventoryDescription) map { inventory =>
             CreatedWithLocation(Json.toJson(inventory), Option("/inventories"))
           }
         }

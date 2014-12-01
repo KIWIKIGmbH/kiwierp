@@ -11,7 +11,7 @@ angular.module('common.services')
         }
 
         return $http({
-          url: endpointRoot + resource + '?token=' + token,
+          url: endpointRoot + resource + '?access_token=' + token,
           method: method,
           data: data
         })

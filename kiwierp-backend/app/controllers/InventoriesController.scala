@@ -13,7 +13,7 @@ import utils.exceptions.InvalidRequest
 import scala.annotation.meta.field
 
 case class InventoryCreationBody
-(@(ApiModelProperty@field)(required = true) partsId: Long,
+(@(ApiModelProperty@field)(required = true) ComponentId: Long,
  @(ApiModelProperty@field)(required = false) description: Option[String],
  @(ApiModelProperty@field)(required = true) quantity: Int)
 
@@ -22,14 +22,14 @@ case class InventoryUpdateBody
  @(ApiModelProperty@field)(required = true) quantity: Int)
 
 @Api(
-  value = "/inventories",
+  value = "/inventory-management/inventories",
   description = "CRUD and list (search) API of inventory"
 )
 object InventoriesController extends KiwiERPController with InventoryJson {
 
   @ApiOperation(
     nickname = "listInventory",
-    value = "find inventories by parts id",
+    value = "find inventories by Component id",
     notes = "",
     response = classOf[models.apidocs.Inventories],
     httpMethod = "GET"
@@ -37,8 +37,8 @@ object InventoriesController extends KiwiERPController with InventoryJson {
   @ApiImplicitParams(
     Array(
       new ApiImplicitParam(
-        name = "partsId",
-        value = "Parts id",
+        name = "ComponentId",
+        value = "Component id",
         required = true,
         paramType = "query",
         dataType = "Long"
@@ -53,10 +53,10 @@ object InventoriesController extends KiwiERPController with InventoryJson {
     )
   )
   def list = AuthorizedAction.async { implicit req =>
-    req.getQueryString("partsId") filter isId map { partsIdStr =>
-      val partsId = partsIdStr.toLong
+    req.getQueryString("ComponentId") filter isId map { ComponentIdStr =>
+      val ComponentId = ComponentIdStr.toLong
 
-      Page(Inventory.findAllByPartsId(partsId)) map { results =>
+      Page(Inventory.findAllByComponentId(ComponentId)) map { results =>
         val (inventories, page) = results
         val json = Json.obj(
           "count" -> inventories.size,
@@ -89,7 +89,7 @@ object InventoriesController extends KiwiERPController with InventoryJson {
   )
   def create = AuthorizedAction.async(parse.json) { implicit req =>
     implicit val createReads: Reads[InventoryCreationBody] = (
-      (__ \ 'partsId).read[Long](min[Long](1) keepAnd max[Long](MAX_LONG_NUMBER)) and
+      (__ \ 'componentId).read[Long](min[Long](1) keepAnd max[Long](MAX_LONG_NUMBER)) and
       (__ \ 'description)
         .readNullable[String](minLength[String](1) keepAnd maxLength[String](500)) and
       (__ \ 'quantity).read[Int](min[Int](1) keepAnd max[Int](MAX_NUMBER))
@@ -97,7 +97,7 @@ object InventoriesController extends KiwiERPController with InventoryJson {
 
     req.body.validate[InventoryCreationBody].fold(
       valid = { j =>
-        CreateInventoryContext(j.partsId, j.description, j.quantity) map { inventory =>
+        CreateInventoryContext(j.ComponentId, j.description, j.quantity) map { inventory =>
           CreatedWithLocation(Json.toJson(inventory))
         }
       },

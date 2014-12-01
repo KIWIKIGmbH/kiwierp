@@ -34,7 +34,7 @@ trait ProductDAO extends KiwiERPDAO[Product] {
 
   val pr = s
 
-  private val (pa, i, io) = (Parts.pa, Inventory.i, InventoryOrder.io)
+  private val (co, i, io) = (Component.co, Inventory.i, Order.io)
 
   def create(name: String, description: Option[String])
             (implicit s: ADS = AsyncDB.sharedSession): Future[Product] = {
@@ -55,49 +55,49 @@ trait ProductDAO extends KiwiERPDAO[Product] {
     }
   }
 
-  def findWithPartsAndInventoriesAndInventoryOrders
+  def findWithComponentsAndInventoriesAndInventoryOrders
   (id: Long)(implicit s: ADS = AsyncDB.sharedSession): Future[Product] = withSQL {
     selectFrom[Product](Product as pr)
-      .leftJoin(Parts as pa).on(
+      .leftJoin(Component as co).on(
         sqls
-          .eq(pa.productId, pr.id)
-          .and.isNull(pa.deletedAt)
+          .eq(co.productId, pr.id)
+          .and.isNull(co.deletedAt)
       )
       .leftJoin(Inventory as i).on(
         sqls
-          .eq(i.partsId, pa.id)
+          .eq(i.componentId, co.id)
           .and.isNull(i.deletedAt)
       )
-      .leftJoin(InventoryOrder as io).on(
+      .leftJoin(Order as io).on(
         sqls
-          .eq(io.partsId, pa.id)
+          .eq(io.componentId, co.id)
           .and.isNull(io.deletedAt)
       )
       .where.eq(pr.id, id)
       .and.append(isNotDeleted)
-  }.one(apply(pr)).toManies(Parts.opt(pa), Inventory.opt(i), InventoryOrder.opt(io)).map { (product, partsSeq, inventories, inventoryOrders) =>
+  }.one(apply(pr)).toManies(Component.opt(co), Inventory.opt(i), Order.opt(io)).map { (product, components, inventories, orders) =>
     product.copy(
-      partsSeq = partsSeq map { parts =>
-        parts.copy(
-          inventories = inventories filter (_.partsId == parts.id),
-          inventoryOrders = inventoryOrders filter (_.partsId == parts.id)
+      components = components map { component =>
+        component.copy(
+          inventories = inventories filter (_.componentId == component.id),
+          orders = orders filter (_.componentId == component.id)
         )
       }
     )
   }.single().future map getOrNotFound
 
-  def findWithPartsSeq(id: Long)(implicit s: ADS = AsyncDB.sharedSession): Future[Product] =
+  def findWithComponents(id: Long)(implicit s: ADS = AsyncDB.sharedSession): Future[Product] =
     withSQL {
       selectFrom[Product](Product as pr)
-        .leftJoin(Parts as pa).on(
+        .leftJoin(Component as co).on(
           sqls
-            .eq(pa.productId, pr.id)
-            .and.isNull(pa.deletedAt)
+            .eq(co.productId, pr.id)
+            .and.isNull(co.deletedAt)
         )
         .where.eq(pr.id, id)
         .and.append(isNotDeleted)
-    }.one(apply(pr)).toMany(Parts.opt(pa)).map { (product, partsSeq) =>
-      product.copy(partsSeq = partsSeq)
+    }.one(apply(pr)).toMany(Component.opt(co)).map { (product, components) =>
+      product.copy(components = components)
     }.single().future map getOrNotFound
 
   def save(id: Long)

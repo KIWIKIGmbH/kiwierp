@@ -1,20 +1,20 @@
 'use strict';
 
 angular.module('inventory.controllers')
-  .controller('ProductsCtrl', ['$scope', '$location', '$routeParams', 'productService', 'partsService', 'formService', 'product',
-    function ($scope, $location, $routeParams, productService, partsService, formService, product) {
+  .controller('ProductsCtrl', ['$scope', '$location', '$routeParams', 'productService', 'componentService', 'formService', 'product',
+    function ($scope, $location, $routeParams, productService, componentService, formService, product) {
       $scope.reloadProduct = function () {
         productService.show($routeParams.productId)
           .then(function (product) {
             $scope.product = product;
-            $scope.partsList = $scope.product.partsList;
+            $scope.components = $scope.product.components;
           }, function () {
             $location.path('/');
           });
       };
 
       $scope.product = product;
-      $scope.partsList = product.partsList;
+      $scope.components = product.components;
 
       $scope.openEditProductForm = function () {
         var modalInstance = null;
@@ -62,19 +62,19 @@ angular.module('inventory.controllers')
         });
       };
 
-      $scope.openAddPartsForm = function (product) {
+      $scope.openAddComponentForm = function (product) {
         var modalInstance = null;
 
-        $scope.partsFormInputs = {
+        $scope.componentFormInputs = {
           productId: product.id
         };
 
-        $scope.partsFormHeader = 'Add Parts';
+        $scope.componentFormHeader = 'Add Component';
 
-        $scope.isAddPartsForm = true;
+        $scope.isAddComponentForm = true;
 
-        $scope.addParts = function () {
-          partsService.add($scope.partsFormInputs)
+        $scope.addComponent = function () {
+          componentService.add($scope.componentFormInputs)
             .then(function () {
               $scope.reloadProduct();
               modalInstance.close();
@@ -82,7 +82,7 @@ angular.module('inventory.controllers')
         };
 
         modalInstance = formService.openForm({
-          templateUrl: '/views/inventories/modals/parts-form.html',
+          templateUrl: '/views/inventories/modals/component-form.html',
           scope: $scope
         });
       };

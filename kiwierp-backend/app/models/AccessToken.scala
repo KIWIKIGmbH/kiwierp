@@ -11,6 +11,7 @@ case class AccessToken
  expiresIn: Int,
  tokenType: String,
  createdAt: DateTime,
+ deletedAt: Option[DateTime] = None,
  user: Option[User] = None) {
 
   def this(accessToken: AccessToken) = this(
@@ -19,6 +20,7 @@ case class AccessToken
     accessToken.expiresIn,
     accessToken.tokenType,
     accessToken.createdAt,
+    accessToken.deletedAt,
     accessToken.user
   )
 

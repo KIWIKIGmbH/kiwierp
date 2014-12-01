@@ -3,7 +3,7 @@ package jsons
 import models.Product
 import play.api.libs.json.{JsValue, Json, Writes}
 
-trait ProductJson extends KiwiERPJson with PartsJson {
+trait ProductJson extends KiwiERPJson with ComponentJson {
 
   implicit val productWrites = new Writes[Product] {
     def writes(product: Product): JsValue = Json.obj(
@@ -12,7 +12,7 @@ trait ProductJson extends KiwiERPJson with PartsJson {
       "id" -> product.id,
       "name" -> product.name,
       "updatedAt" -> dateTimeToString(product.updatedAt),
-      "partsList" -> Json.toJson(product.partsSeq)
+      "components" -> Json.toJson(product.components)
     )
   }
 

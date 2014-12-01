@@ -11,4 +11,4 @@ case class ProductWithRelations
  @(ApiModelProperty @field)(required = true) id: Long,
  @(ApiModelProperty @field)(required = true) name: String,
  @(ApiModelProperty @field)(required = true) updatedAt: DateTime,
- @(ApiModelProperty @field)(required = true) partsList: Seq[PartsWithRelations])
+ @(ApiModelProperty @field)(required = true) components: Seq[ComponentWithRelations])

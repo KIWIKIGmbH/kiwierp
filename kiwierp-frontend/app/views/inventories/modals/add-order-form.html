@@ -1,12 +1,12 @@
 <div class="modal-header">
   <button type="button" class="close" data-ng-click="$dismiss()">&times;</button>
-  <h3>Order Parts</h3>
+  <h3>Order Component</h3>
 </div>
 <div class="modal-body">
   <form role="form" name="orderForm">
     <div class="form-group">
-      <label>Supplier</label>
-      <select data-ng-model="orderFormInputs.supplierId" data-ng-options="supplier.id as supplier.companyName for supplier in suppliers" required></select>
+      <label for="order-form-supplier">Supplier</label>
+      <select id="order-form-supplier" data-ng-model="orderFormInputs.supplierId" data-ng-options="supplier.id as supplier.companyName for supplier in suppliers" required></select>
     </div>
     <div class="form-group">
       <label for="order-form-quantity">Order Quantity</label>

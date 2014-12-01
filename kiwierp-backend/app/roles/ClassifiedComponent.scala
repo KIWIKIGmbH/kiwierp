@@ -1,15 +1,15 @@
 package roles
 
-import models.{Inventory, Parts}
+import models.{Inventory, Component}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scalikejdbc.async.AsyncDBSession
 import utils.exceptions.InvalidRequest
 
 import scala.concurrent.Future
 
-trait ClassifiedParts {
+trait ClassifiedComponent {
 
-  this: Parts =>
+  this: Component =>
 
   def checkUnclassifiedQuantity(classifiedQuantity: Int) =
     if (classifiedQuantity > unclassifiedQuantity) throw new InvalidRequest
@@ -28,6 +28,6 @@ trait ClassifiedParts {
     }
 
   private def classified(classifiedQuantity: Int)(implicit s: AsyncDBSession): Future[Int] =
-    Parts.updateUnclassifiedQuantity(id)(unclassifiedQuantity - classifiedQuantity)
+    Component.updateUnclassifiedQuantity(id)(unclassifiedQuantity - classifiedQuantity)
 
 }

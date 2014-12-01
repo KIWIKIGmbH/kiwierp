@@ -1,9 +1,9 @@
 package controllers
 
 import com.wordnik.swagger.annotations._
-import contexts.{CreateInventoryOrderContext, UpdateInventoryOrderContext}
-import jsons.InventoryOrderJson
-import models.InventoryOrder
+import contexts.{CreateOrderContext, UpdateOrderContext}
+import jsons.OrderJson
+import models.Order
 import org.joda.time.DateTime
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.functional.syntax._
@@ -14,7 +14,7 @@ import utils.exceptions.InvalidRequest
 import scala.annotation.meta.field
 
 case class OrderCreationBody
-(@(ApiModelProperty @field)(required = true) partsId: Long,
+(@(ApiModelProperty @field)(required = true) componentId: Long,
  @(ApiModelProperty @field)(required = true) supplierId: Long,
  @(ApiModelProperty @field)(required = true) quantity: Int,
  @(ApiModelProperty @field)(required = true) orderedDate: DateTime)
@@ -24,14 +24,14 @@ case class OrderUpdateBody
  @(ApiModelProperty @field)(required = true) statusChangedDate: DateTime)
 
 @Api(
-  value = "/inventoryorders",
-  description = "CRUD and list (search) API of order data of parts"
+  value = "/inventory-management/orders",
+  description = "CRUD and list (search) API of order data of component"
 )
-object InventoryOrdersController extends KiwiERPController with InventoryOrderJson {
+object OrdersController extends KiwiERPController with OrderJson {
 
   @ApiOperation(
     nickname = "listOrder",
-    value = "find orders by parts id",
+    value = "find orders by component id",
     notes = "",
     response = classOf[models.apidocs.Orders],
     httpMethod = "GET"
@@ -39,8 +39,8 @@ object InventoryOrdersController extends KiwiERPController with InventoryOrderJs
   @ApiImplicitParams(
     Array(
       new ApiImplicitParam(
-        name = "partsId",
-        value = "Parts id",
+        name = "componentId",
+        value = "component id",
         required = true,
         paramType = "query",
         dataType = "Long"
@@ -55,16 +55,16 @@ object InventoryOrdersController extends KiwiERPController with InventoryOrderJs
     )
   )
   def list = AuthorizedAction.async { implicit req =>
-    req.getQueryString("partsId") filter isId map { partsIdStr =>
-      Page(InventoryOrder.findAllByPartsId(partsIdStr.toLong))
+    req.getQueryString("componentId") filter isId map { componentIdStr =>
+      Page(Order.findAllByComponentId(componentIdStr.toLong))
     } getOrElse {
-      Page(InventoryOrder.findAll)
+      Page(Order.findAll)
     } map { results =>
-      val (inventoryOrders, page) = results
+      val (orders, page) = results
       val json = Json.obj(
-        "count" -> inventoryOrders.size,
+        "count" -> orders.size,
         "page" -> page,
-        "results" -> Json.toJson(inventoryOrders)
+        "results" -> Json.toJson(orders)
       )
 
       Ok(json)
@@ -73,7 +73,7 @@ object InventoryOrdersController extends KiwiERPController with InventoryOrderJs
 
   @ApiOperation(
     nickname = "createOrder",
-    value = "Register order of parts",
+    value = "Register order of component",
     notes = "",
     response = classOf[models.apidocs.Order],
     httpMethod = "POST"
@@ -91,7 +91,7 @@ object InventoryOrdersController extends KiwiERPController with InventoryOrderJs
   )
   def create = AuthorizedAction.async(parse.json) { implicit req =>
     implicit val createReads: Reads[OrderCreationBody] = (
-      (__ \ 'partsId).read[Long](min[Long](1) keepAnd max[Long](MAX_LONG_NUMBER)) and
+      (__ \ 'componentId).read[Long](min[Long](1) keepAnd max[Long](MAX_LONG_NUMBER)) and
       (__ \ 'supplierId).read[Long](min[Long](1) keepAnd max[Long](MAX_LONG_NUMBER)) and
       (__ \ 'quantity).read[Int](min[Int](1) keepAnd max[Int](MAX_NUMBER)) and
       (__ \ 'orderedDate).read[DateTime](jodaDateReads(DATETIME_PATTERN))
@@ -99,13 +99,13 @@ object InventoryOrdersController extends KiwiERPController with InventoryOrderJs
 
     req.body.validate[OrderCreationBody].fold(
       valid = { j =>
-        CreateInventoryOrderContext(
-          j.partsId,
+        CreateOrderContext(
+          j.componentId,
           j.supplierId,
           j.quantity,
           j.orderedDate
-        ) map { inventoryOrder =>
-          CreatedWithLocation(Json.toJson(inventoryOrder))
+        ) map { order =>
+          CreatedWithLocation(Json.toJson(order))
         }
       },
       invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
@@ -131,8 +131,8 @@ object InventoryOrdersController extends KiwiERPController with InventoryOrderJs
     )
   )
   def read(id: Long) = AuthorizedAction.async {
-    InventoryOrder.find(id) map { inventoryOrder =>
-      Ok(Json.toJson(inventoryOrder))
+    Order.find(id) map { order =>
+      Ok(Json.toJson(order))
     }
   }
 
@@ -169,7 +169,7 @@ object InventoryOrdersController extends KiwiERPController with InventoryOrderJs
 
     req.body.validate[OrderUpdateBody].fold(
       valid = { j =>
-        UpdateInventoryOrderContext(id, j.status, j.statusChangedDate) map (_ => NoContent)
+        UpdateOrderContext(id, j.status, j.statusChangedDate) map (_ => NoContent)
       },
       invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
     )
@@ -195,7 +195,7 @@ object InventoryOrdersController extends KiwiERPController with InventoryOrderJs
     )
   )
   def delete(id: Long) = AuthorizedAction.async {
-    InventoryOrder.destroy(id) map (_ => NoContent)
+    Order.destroy(id) map (_ => NoContent)
   }
 
 }

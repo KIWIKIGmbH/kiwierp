@@ -1,13 +1,13 @@
 'use strict';
 
 angular.module('common.services')
-  .factory('authorizationService', ['userService', 'accessTokenService', 'redirectService',
-    function (userService, accessTokenService, redirectService) {
+  .factory('authorizationService', ['sessionService', 'accessTokenService', 'redirectService',
+    function (sessionService, accessTokenService, redirectService) {
       return {
         authorize: function () {
-          var userId = accessTokenService.userId();
+          var token = accessTokenService.token();
 
-          return !!userId ? userService.show(userId) : redirectService.toLoginPage();
+          return !!token ? sessionService.show() : redirectService.toLoginPage();
         }
       };
     }]);

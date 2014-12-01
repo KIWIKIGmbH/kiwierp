@@ -1,13 +1,13 @@
 package roles
 
-import models.{Inventory, Parts}
+import models.{Inventory, Component}
 import scalikejdbc.async.AsyncDBSession
 
 import scala.concurrent.Future
 
-trait InventoryAddedParts {
+trait InventoryAddedComponent {
 
-  this: Parts =>
+  this: Component =>
 
   def addInventory(description: Option[String], quantity: Int)
                   (implicit s: AsyncDBSession): Future[Inventory] =

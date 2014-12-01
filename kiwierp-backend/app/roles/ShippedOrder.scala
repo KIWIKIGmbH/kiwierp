@@ -1,19 +1,19 @@
 package roles
 
-import models.InventoryOrder
+import models.Order
 import org.joda.time.DateTime
 import scalikejdbc.async.AsyncDBSession
 import utils.exceptions.InvalidRequest
 
 import scala.concurrent.Future
 
-trait ShippedInventoryOrder {
+trait ShippedOrder {
 
-  this: InventoryOrder =>
+  this: Order =>
 
   def checkStatus() = if (status != "ordered") throw new InvalidRequest
 
   def shipped(shippedDate: DateTime)(implicit s: AsyncDBSession): Future[Int] =
-    InventoryOrder.save(id)(shippedDate = Option(shippedDate), status = "shipped")
+    Order.save(id)(shippedDate = Option(shippedDate), status = "shipped")
 
 }

@@ -1,5 +1,6 @@
 package controllers
 
+import com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException
 import com.wordnik.swagger.annotations._
 import contexts.DeleteProductContext
 import jsons.ProductJson
@@ -21,7 +22,7 @@ case class ProductUpdateBody
  @(ApiModelProperty @field)(required = false) description: Option[String])
 
 @Api(
-  value = "/products",
+  value = "/inventory-management/products",
   description = "CRUD and list (search) API of product"
 )
 object ProductsController extends KiwiERPController with ProductJson {
@@ -85,6 +86,8 @@ object ProductsController extends KiwiERPController with ProductJson {
       valid = { j =>
         Product.create(j.name, j.description) map { product =>
           CreatedWithLocation(Json.toJson(product))
+        } recover {
+          case e: GenericDatabaseException => throw new InvalidRequest
         }
       },
       invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
@@ -110,7 +113,7 @@ object ProductsController extends KiwiERPController with ProductJson {
     )
   )
   def read(id: Long) = AuthorizedAction.async {
-    Product.findWithPartsAndInventoriesAndInventoryOrders(id) map { product =>
+    Product.findWithComponentsAndInventoriesAndInventoryOrders(id) map { product =>
       Ok(Json.toJson(product))
     }
   }
@@ -148,7 +151,9 @@ object ProductsController extends KiwiERPController with ProductJson {
 
     req.body.validate[ProductUpdateBody].fold(
       valid = { j =>
-        Product.save(id)(j.name, j.description) map (_ => NoContent)
+        Product.save(id)(j.name, j.description) map (_ => NoContent) recover {
+          case e: GenericDatabaseException => throw new InvalidRequest
+        }
       },
       invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
     )

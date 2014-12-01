@@ -3,9 +3,9 @@
 angular.module('inventory.controllers')
   .controller('InventoryTableCtrl', ['$scope', 'inventoryService', 'formService',
     function ($scope, inventoryService, formService) {
-      $scope.inventories = $scope.parts.inventories;
+      $scope.inventories = $scope.component.inventories;
 
-      $scope.unclassifiedQuantity = $scope.parts.unclassifiedQuantity;
+      $scope.unclassifiedQuantity = $scope.component.unclassifiedQuantity;
 
       $scope.openEditInventoryForm = function (inventory) {
         var modalInstance = null;

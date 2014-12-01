@@ -11,7 +11,7 @@ case class Order
  @(ApiModelProperty @field)(required = true) id: Long,
  @(ApiModelProperty @field)(required = true) quantity: Int,
  @(ApiModelProperty @field)(required = true) orderedDate: DateTime,
- @(ApiModelProperty @field)(required = true) partsId: Long,
+ @(ApiModelProperty @field)(required = true) componentId: Long,
  @(ApiModelProperty @field)(required = false) shippedDate: Option[DateTime],
  @(ApiModelProperty @field)(required = true) status: String,
  @(ApiModelProperty @field)(required = true) updatedAt: DateTime)

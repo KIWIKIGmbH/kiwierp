@@ -1,32 +1,32 @@
 package contexts
 
-import models.{Inventory, Parts}
+import models.{Inventory, Component}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import roles.InventoryAddedParts
+import roles.InventoryAddedComponent
 import scalikejdbc.async.{AsyncDB, AsyncDBSession}
 import utils.exceptions.InvalidRequest
 
 import scala.concurrent.Future
 
 class CreateInventoryContext private
-(parts: Parts,
+(component: Component,
  description: Option[String],
  quantity: Int)(implicit s: AsyncDBSession) {
 
   private def create(): Future[Inventory] = {
-    val inventoryAddedParts = new Parts(parts) with InventoryAddedParts
+    val inventoryAddedComponent = new Component(component) with InventoryAddedComponent
 
-    inventoryAddedParts.addInventory(description, quantity)
+    inventoryAddedComponent.addInventory(description, quantity)
   }
 
 }
 
 object CreateInventoryContext extends KiwiERPContext {
 
-  def apply(partsId: Long, description: Option[String], quantity: Int): Future[Inventory] =
+  def apply(componentId: Long, description: Option[String], quantity: Int): Future[Inventory] =
     AsyncDB withPool { implicit s =>
-      Parts.find(partsId) flatMap { parts =>
-        val cxt = new CreateInventoryContext(parts, description, quantity)
+      Component.find(componentId) flatMap { component =>
+        val cxt = new CreateInventoryContext(component, description, quantity)
 
         cxt.create()
       }

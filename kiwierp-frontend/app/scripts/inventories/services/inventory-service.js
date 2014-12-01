@@ -3,12 +3,12 @@
 angular.module('inventory.services')
   .factory('inventoryService', ['apiService',
     function (apiService) {
-      var baseResource = '/inventories';
+      var baseResource = '/inventory-management/inventories';
 
       return {
         add: function (inventory) {
           var data = {
-            partsId: inventory.partsId,
+            componentId: inventory.componentId,
             description: inventory.description,
             quantity: inventory.quantity
           };

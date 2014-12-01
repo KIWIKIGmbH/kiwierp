@@ -3,7 +3,7 @@
 angular.module('inventory.controllers')
   .controller('OrderTableCtrl', ['$scope', 'orderService', 'formService',
     function ($scope, orderService, formService) {
-      $scope.inventoryOrders = $scope.parts.inventoryOrders;
+      $scope.orders = $scope.component.orders;
 
       $scope.deliveredOrders = function (orders) {
         return orderService.selectDelivered(orders);
@@ -13,15 +13,15 @@ angular.module('inventory.controllers')
         return orderService.isDelivered(order.status);
       };
 
-      $scope.openEditOrderForm = function (inventoryOrder) {
+      $scope.openEditOrderForm = function (order) {
         var modalInstance = null;
 
         $scope.orderFormInputs = {
-          id: inventoryOrder.id,
+          id: order.id,
           statusChangedDate: new Date()
         };
 
-        $scope.statusList = orderService.nextStatusList(inventoryOrder.status);
+        $scope.statusList = orderService.nextStatusList(order.status);
 
         $scope.editOrder = function () {
           orderService.edit($scope.orderFormInputs)

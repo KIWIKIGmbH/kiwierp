@@ -1,0 +1,23 @@
+<div class="modal-header">
+  <button type="button" class="close" data-ng-click="$dismiss()">&times;</button>
+  <h3>Classify Component</h3>
+</div>
+<div class="modal-body">
+  <form role="form" name="classifyComponentForm">
+    <div class="form-group">
+      <label for="classify-form-classified-quantity">Classified Quantity</label>
+      <input id="classify-form-classified-quantity" type="number" class="form-control" placeholder="Classified Quantity" data-ng-model="classifyComponentFormInputs.classifiedQuantity" required />
+    </div>
+    <div class="form-group">
+      <label for="classify-form-inventory">Classify Component to New or Exist Inventory</label>
+      <select id="classify-form-inventory" data-ng-model="classifyComponentFormInputs.inventoryId" data-ng-options="inventory.id as component.name + ' Inventory (inventory ID: ' + inventory.id + ')' for inventory in inventories"></select>
+    </div>
+    <div class="form-group">
+      <label for="classify-form-inventory-description">Description for New Inventory (If You Create New One)</label>
+      <textarea id="classify-form-inventory-description" class="form-control" rows="3" data-ng-model="classifyComponentFormInputs.inventoryDescription"></textarea>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-lg btn-warning" data-ng-click="classifyComponent()" data-ng-disabled="classifyComponentForm.$invalid">Classify</button>
+</div>

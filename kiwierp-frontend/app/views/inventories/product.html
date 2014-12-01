@@ -14,19 +14,19 @@
         <button type="submit" class="btn btn-md btn-primary btn-block" data-ng-click="openEditProductForm()">Edit Product</button>
       </div>
       <div class="col-lg-2 pull-right" style="margin-bottom: 20px;">
-        <button type="submit" class="btn btn-md btn-success btn-block" data-ng-click="openAddPartsForm(product)">Add Parts</button>
+        <button type="submit" class="btn btn-md btn-success btn-block" data-ng-click="openAddComponentForm(product)">Add Component</button>
       </div>
-      <div class="col-lg-12" data-ng-controller="PartsPanelsCtrl">
-        <div class="panel panel-default" data-ng-repeat="parts in partsList">
+      <div class="col-lg-12" data-ng-controller="ComponentPanelsCtrl">
+        <div class="panel panel-default" data-ng-repeat="component in components">
           <div class="panel-heading">
-            <h2>{{ parts.name }}</h2>
+            <h2>{{ component.name }}</h2>
           </div>
           <!-- .panel-heading -->
           <div class="panel-body">
-            <button type="button" class="btn btn-xs btn-warning pull-right" style="margin-left: 10px" data-ng-click="openAddOrderForm(parts)">Order Parts</button>
-            <button type="button" class="btn btn-xs btn-primary pull-right" style="margin-left: 10px" data-ng-click="openEditPartsForm(parts)">Edit Parts</button>
-            <button type="button" class="btn btn-xs btn-success pull-right" style="margin-left: 10px" data-ng-click="openAddInventoryForm(parts)">Add Inventory</button>
-            <p class="lead">{{ parts.description }}</p>
+            <button type="button" class="btn btn-xs btn-warning pull-right" style="margin-left: 10px" data-ng-click="openAddOrderForm(component)">Order Component</button>
+            <button type="button" class="btn btn-xs btn-primary pull-right" style="margin-left: 10px" data-ng-click="openEditComponentForm(component)">Edit Component</button>
+            <button type="button" class="btn btn-xs btn-success pull-right" style="margin-left: 10px" data-ng-click="openAddInventoryForm(component)">Add Inventory</button>
+            <p class="lead">{{ component.description }}</p>
             <div data-ng-controller="InventoryTableCtrl">
               <h3>Inventories</h3>
               <div class="table-responsive">
@@ -53,8 +53,8 @@
                     <td>{{ unclassifiedQuantity }}</td>
                     <td></td>
                     <td>
-                      <a href data-ng-click="openClassifyPartsForm(parts)"
-                         data-ng-show="parts.unclassifiedQuantity > 0">Classify</a>
+                      <a href data-ng-click="openClassifyComponentForm(component)"
+                         data-ng-show="component.unclassifiedQuantity > 0">Classify</a>
                     </td>
                   </tr>
                   <tr>
@@ -85,20 +85,20 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <tr data-ng-repeat="inventoryOrder in inventoryOrders">
+                  <tr data-ng-repeat="order in orders">
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ inventoryOrder.quantity }}</td>
-                    <td>{{ inventoryOrder.orderedDate }}</td>
-                    <td>{{ inventoryOrder.shippedDate }}</td>
-                    <td>{{ inventoryOrder.deliveredDate }}</td>
-                    <td>{{ inventoryOrder.status }}</td>
+                    <td>{{ order.quantity }}</td>
+                    <td>{{ order.orderedDate }}</td>
+                    <td>{{ order.shippedDate }}</td>
+                    <td>{{ order.deliveredDate }}</td>
+                    <td>{{ order.status }}</td>
                     <td>
-                      <a href="" data-ng-click="openEditOrderForm(inventoryOrder)" data-ng-hide="isDelivered(inventoryOrder)">Edit</a>
+                      <a href="" data-ng-click="openEditOrderForm(order)" data-ng-hide="isDelivered(order)">Edit</a>
                     </td>
                   </tr>
                   <tr>
                     <td>Delivered</td>
-                    <td>{{ totalQuantity(deliveredOrders(inventoryOrders)) }}</td>
+                    <td>{{ totalQuantity(deliveredOrders(orders)) }}</td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -107,7 +107,7 @@
                   </tr>
                   <tr>
                     <td>Sum</td>
-                    <td>{{ totalQuantity(inventoryOrders) }}</td>
+                    <td>{{ totalQuantity(orders) }}</td>
                     <td></td>
                     <td></td>
                     <td></td>

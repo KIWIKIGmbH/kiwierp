@@ -3,7 +3,7 @@
 angular.module('inventory.services')
   .factory('supplierService', ['apiService',
     function (apiService) {
-      var baseResource = '/suppliers';
+      var baseResource = '/inventory-management/suppliers';
 
       return {
         search: function () {

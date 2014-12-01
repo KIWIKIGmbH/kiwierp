@@ -4,7 +4,7 @@ case class Route(method: String, private val path: String) {
 
   private lazy val PATH_REGEX = {
     val appContext = "/api/v[1-9]\\d*"
-    val resource = "/[a-z/]+[a-z]"
+    val resource = "/[a-z/\\-]+[a-z]"
     s"""$appContext($resource)""".r
   }
 

@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('inventory.services')
-  .factory('partsService', ['apiService',
+  .factory('componentService', ['apiService',
     function (apiService) {
-      var baseResource = '/parts';
+      var baseResource = '/inventory-management/components';
 
       return {
         add: function (parts) {
@@ -35,14 +35,20 @@ angular.module('inventory.services')
         },
 
         classify: function (classification) {
-          var resource = baseResource + '/' + classification.partsId + '/classification';
-          var data = {
-            classifiedQuantity: classification.classifiedQuantity,
-            inventoryId: classification.inventoryId,
-            inventoryDescription: classification.inventoryDescription
-          };
+          var resource = baseResource + '/' + classification.componentId + '/classification';
+          var inventoryId = classification.inventoryId;
 
-          return apiService.post(resource, data);
+          if (!!inventoryId) {
+            return apiService.post(resource, {
+              classifiedQuantity: classification.classifiedQuantity,
+              inventoryId: inventoryId
+            });
+          } else {
+            return apiService.post(resource, {
+              classifiedQuantity: classification.classifiedQuantity,
+              inventoryDescription: classification.inventoryDescription
+            });
+          }
         }
       };
     }]);

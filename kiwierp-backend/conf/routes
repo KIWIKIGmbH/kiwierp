@@ -1,55 +1,58 @@
 # Swagger
-GET           /api-docs                        controllers.ApiHelpController.getResources
+GET           /api-docs                                                  controllers.ApiHelpController.getResources
 
 # Sessions
-POST          /sessions                        controllers.SessionsController.index
-GET           /api-docs/sessions               controllers.ApiHelpController.getResource(paths = "/sessions")
+POST          /sessions                                                  controllers.SessionsController.index
+GET           /sessions                                                  controllers.SessionsController.user
+GET           /api-docs/sessions                                         controllers.ApiHelpController.getResource(paths = "/sessions")
 
 # Users
-GET           /users                           controllers.UsersController.list
-POST          /users                           controllers.UsersController.create
-GET           /users/:id                       controllers.UsersController.read(id: Long)
-PATCH         /users/:id                       controllers.UsersController.update(id: Long)
-DELETE        /users/:id                       controllers.UsersController.delete(id: Long)
-GET           /api-docs/users                  controllers.ApiHelpController.getResource(paths = "/users")
+GET           /users                                                     controllers.UsersController.list
+POST          /users                                                     controllers.UsersController.create
+GET           /users/:id                                                 controllers.UsersController.read(id: Long)
+PATCH         /users/:id                                                 controllers.UsersController.update(id: Long)
+DELETE        /users/:id                                                 controllers.UsersController.delete(id: Long)
+GET           /api-docs/users                                            controllers.ApiHelpController.getResource(paths = "/users")
 
 # Products
-GET           /products                        controllers.ProductsController.list
-POST          /products                        controllers.ProductsController.create
-GET           /products/:id                    controllers.ProductsController.read(id: Long)
-PATCH         /products/:id                    controllers.ProductsController.update(id: Long)
-DELETE        /products/:id                    controllers.ProductsController.delete(id: Long)
-GET           /api-docs/products               controllers.ApiHelpController.getResource(paths = "/products")
+GET           /inventory-management/products                             controllers.ProductsController.list
+POST          /inventory-management/products                             controllers.ProductsController.create
+GET           /inventory-management/products/:id                         controllers.ProductsController.read(id: Long)
+PATCH         /inventory-management/products/:id                         controllers.ProductsController.update(id: Long)
+DELETE        /inventory-management/products/:id                         controllers.ProductsController.delete(id: Long)
+GET           /api-docs/inventory-management/products                    controllers.ApiHelpController.getResource(paths = "/inventory-management/products")
 
-# Parts
-GET           /parts                           controllers.PartsController.list
-POST          /parts                           controllers.PartsController.create
-GET           /parts/:id                       controllers.PartsController.read(id: Long)
-PATCH         /parts/:id                       controllers.PartsController.update(id: Long)
-DELETE        /parts/:id                       controllers.PartsController.delete(id: Long)
-POST          /parts/:id/classification        controllers.PartsController.classify(id: Long)
-GET           /api-docs/parts                  controllers.ApiHelpController.getResource(paths = "/parts")
+
+# Component
+GET           /inventory-management/components                           controllers.ComponentsController.list
+POST          /inventory-management/components                           controllers.ComponentsController.create
+GET           /inventory-management/components/:id                       controllers.ComponentsController.read(id: Long)
+PATCH         /inventory-management/components/:id                       controllers.ComponentsController.update(id: Long)
+DELETE        /inventory-management/components/:id                       controllers.ComponentsController.delete(id: Long)
+POST          /inventory-management/components/:id/classification        controllers.ComponentsController.classify(id: Long)
+GET           /api-docs/inventory-management/components                  controllers.ApiHelpController.getResource(paths = "/inventory-management/components")
 
 # Suppliers
-GET           /suppliers                       controllers.SuppliersController.list
-POST          /suppliers                       controllers.SuppliersController.create
-GET           /suppliers/:id                   controllers.SuppliersController.read(id: Long)
-PATCH         /suppliers/:id                   controllers.SuppliersController.update(id: Long)
-DELETE        /suppliers/:id                   controllers.SuppliersController.delete(id: Long)
-GET           /api-docs/suppliers              controllers.ApiHelpController.getResource(paths = "/suppliers")
+GET           /inventory-management/suppliers                            controllers.SuppliersController.list
+POST          /inventory-management/suppliers                            controllers.SuppliersController.create
+GET           /inventory-management/suppliers/:id                        controllers.SuppliersController.read(id: Long)
+PATCH         /inventory-management/suppliers/:id                        controllers.SuppliersController.update(id: Long)
+DELETE        /inventory-management/suppliers/:id                        controllers.SuppliersController.delete(id: Long)
+GET           /api-docs/inventory-management/suppliers                   controllers.ApiHelpController.getResource(paths = "/inventory-management/suppliers")
 
 # Inventories
-GET           /inventories                     controllers.InventoriesController.list
-POST          /inventories                     controllers.InventoriesController.create
-GET           /inventories/:id                 controllers.InventoriesController.read(id: Long)
-PATCH         /inventories/:id                 controllers.InventoriesController.update(id: Long)
-DELETE        /inventories/:id                 controllers.InventoriesController.delete(id: Long)
-GET           /api-docs/inventories            controllers.ApiHelpController.getResource(paths = "/inventories")
+GET           /inventory-management/inventories                          controllers.InventoriesController.list
+POST          /inventory-management/inventories                          controllers.InventoriesController.create
+GET           /inventory-management/inventories/:id                      controllers.InventoriesController.read(id: Long)
+PATCH         /inventory-management/inventories/:id                      controllers.InventoriesController.update(id: Long)
+DELETE        /inventory-management/inventories/:id                      controllers.InventoriesController.delete(id: Long)
+GET           /api-docs/inventory-management/inventories                 controllers.ApiHelpController.getResource(paths = "/inventory-management/inventories")
 
 # InventoryOrders
-GET           /inventoryorders                 controllers.InventoryOrdersController.list
-POST          /inventoryorders                 controllers.InventoryOrdersController.create
-GET           /inventoryorders/:id             controllers.InventoryOrdersController.read(id: Long)
-PATCH         /inventoryorders/:id             controllers.InventoryOrdersController.update(id: Long)
-DELETE        /inventoryorders/:id             controllers.InventoryOrdersController.delete(id: Long)
-GET           /api-docs/inventoryorders        controllers.ApiHelpController.getResource(paths = "/inventoryorders")
+GET           /inventory-management/orders                               controllers.OrdersController.list
+POST          /inventory-management/orders                               controllers.OrdersController.create
+GET           /inventory-management/orders/:id                           controllers.OrdersController.read(id: Long)
+PATCH         /inventory-management/orders/:id                           controllers.OrdersController.update(id: Long)
+DELETE        /inventory-management/orders/:id                           controllers.OrdersController.delete(id: Long)
+GET           /api-docs/inventory-management/orders                      controllers.ApiHelpController.getResource(paths = "/inventory-management/orders")
+

@@ -5,23 +5,23 @@ import org.joda.time.DateTime
 
 case class Inventory
 (id: Long,
- partsId: Long,
+ componentId: Long,
  description: Option[String],
  quantity: Int,
  createdAt: DateTime,
  updatedAt: DateTime,
  deletedAt: Option[DateTime] = None,
- parts: Option[Parts] = None) {
+ component: Option[Component] = None) {
 
   def this(inventory: Inventory) = this(
     inventory.id,
-    inventory.partsId,
+    inventory.componentId,
     inventory.description,
     inventory.quantity,
     inventory.createdAt,
     inventory.updatedAt,
     inventory.deletedAt,
-    inventory.parts
+    inventory.component
   )
 
 }
