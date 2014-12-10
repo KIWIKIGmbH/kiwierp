@@ -131,7 +131,7 @@ angular.module('inventory.controllers')
         };
 
         modalInstance = formService.openForm({
-          templateUrl: '/views/inventories/modals/classify-Component-form.html',
+          templateUrl: '/views/inventories/modals/classify-component-form.html',
           scope: $scope
         });
       };

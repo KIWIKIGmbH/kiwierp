@@ -19,10 +19,10 @@
   </form>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-lg btn-success" data-ng-click="addComponent()" data-ng-if="isAddComponentForm" data-ng-disabled="componentForm.$invalid">Create</button>
+  <button type="button" class="btn btn-lg btn-primary" data-ng-click="addComponent()" data-ng-if="isAddComponentForm" data-ng-disabled="componentForm.$invalid">Create</button>
   <div data-ng-if="!isAddComponentForm">
     <button type="button" class="btn btn-lg btn-danger" data-ng-click="removeComponentAlert()">Remove</button>
     or
-    <button type="button" class="btn btn-lg btn-primary" data-ng-click="editComponent()" data-ng-disabled="Form.$invalid">Update</button>
+    <button type="button" class="btn btn-lg btn-primary" data-ng-click="editComponent()" data-ng-disabled="componentForm.$invalid">Update</button>
   </div>
 </div>

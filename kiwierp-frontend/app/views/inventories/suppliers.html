@@ -1,34 +1,32 @@
 <div id="wrapper">
   <div data-ke-navbar></div>
   <div id="page-wrapper">
-    <div class="row">
-      <div class="col-lg-12">
-        <h1 class="page-header">
-          Suppliers
-          <small>Inventory</small>
-        </h1>
-        <div class="col-lg-3" data-ng-repeat="supplier in suppliers">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              {{ supplier.companyName }}
-            </div>
-            <!-- .panel-heading -->
-            <div class="panel-body">
-              <dl>
-                <dt>Personal Name</dt>
-            <dd>{{ supplier.personalName }}</dd>
-                <dt>Phone Number</dt>
-            <dd>{{ supplier.phoneNumber }}</dd>
-            </dl>
-            <button type="button" class="btn btn-xs btn-primary pull-right" data-ng-click="openEditSupplierForm(supplier)">Edit</button>
-          </div>
-        </div>
-        </div>
-        <div class="col-lg-2 col-lg-offset-10">
-          <button type="submit" class="btn btn-lg btn-success btn-block" data-ng-click="openAddSupplierForm()">Add Supplier</button>
-        </div>
+    <div class="row col-lg-12">
+      <div class="page-header">
+        <p class="page-header__group">Inventory</p>
+        <h1 class="page-header__title">Suppliers</h1>
       </div>
-      <!-- /.col-lg-12 -->
+      <div class="table-responsive">
+        <table class="table table-hover table_suppliers">
+          <thead>
+            <tr>
+              <th>Company Name</th>
+              <th>Personal Name</th>
+              <th>Phone Number</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-ng-repeat="supplier in suppliers">
+              <td>{{ supplier.companyName }}</td>
+              <td>{{ supplier.personalName }}</td>
+              <td>{{ supplier.phoneNumber }}</td>
+              <td><a href data-ng-click="openEditSupplierForm(supplier)"><i class="fa fa-pencil fa-fw"></i> Edit</a>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button type="submit" class="btn btn-primary" data-ng-click="openAddSupplierForm()"><i class="fa fa-plus fa-fw"></i> Add Supplier</button>
     </div>
   </div>
 </div>
