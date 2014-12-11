@@ -14,5 +14,5 @@ case class ComponentWithRelations
  @(ApiModelProperty @field)(required = true) productId: Long,
  @(ApiModelProperty @field)(required = true) unclassifiedQuantity: Int,
  @(ApiModelProperty @field)(required = true) updatedAt: DateTime,
- @(ApiModelProperty @field)(required = true) inventories: Seq[Inventory],
+ @(ApiModelProperty @field)(required = true) inventories: Seq[ComponentInventory],
  @(ApiModelProperty @field)(required = true) orders: Seq[Order])

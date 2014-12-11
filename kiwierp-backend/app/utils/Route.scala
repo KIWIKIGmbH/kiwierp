@@ -18,7 +18,13 @@ case class Route(method: String, private val path: String) {
     s"""$PATH_REGEX_WITH_ID/($extra)""".r
   }
 
+  private lazy val PATH_REGEX_WITH_ID_AND_EXTRA_WITH_ID = {
+    val extra_id = "[1-9]\\d*"
+    s"""$PATH_REGEX_WITH_ID_AND_EXTRA/$extra_id""".r
+  }
+
   val uri = path match {
+    case PATH_REGEX_WITH_ID_AND_EXTRA_WITH_ID(resource, extra) => s"$resource/:id/$extra/:id"
     case PATH_REGEX_WITH_ID_AND_EXTRA(resource, extra) => s"$resource/:id/$extra"
     case PATH_REGEX_WITH_ID(resource) => s"$resource/:id"
     case PATH_REGEX(resource) => resource

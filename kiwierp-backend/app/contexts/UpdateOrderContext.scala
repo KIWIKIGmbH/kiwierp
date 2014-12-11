@@ -1,9 +1,9 @@
 package contexts
 
-import models.{Order, Component}
+import models.{Component, Order}
 import org.joda.time.DateTime
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import roles.{DeliveredOrder, DeliveredComponent, ShippedOrder}
+import roles.{DeliveredComponent, DeliveredOrder, ShippedOrder}
 import scalikejdbc.async.{AsyncDB, AsyncDBSession}
 import utils.exceptions.InvalidRequest
 

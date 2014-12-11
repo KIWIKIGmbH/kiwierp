@@ -10,7 +10,8 @@ case class Product
  createdAt: DateTime,
  updatedAt: DateTime,
  deletedAt: Option[DateTime] = None,
- components: Seq[Component] = Nil) {
+ components: Seq[Component] = Nil,
+ inventories: Seq[ProductInventory] = Nil) {
 
   def this(product: Product) = this(
     product.id,
@@ -19,7 +20,8 @@ case class Product
     product.createdAt,
     product.updatedAt,
     product.deletedAt,
-    product.components
+    product.components,
+    product.inventories
   )
 
 }

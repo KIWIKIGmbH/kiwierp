@@ -10,4 +10,5 @@ case class Product
  @(ApiModelProperty @field)(required = false) description: Option[String],
  @(ApiModelProperty @field)(required = true) id: Long,
  @(ApiModelProperty @field)(required = true) name: String,
- @(ApiModelProperty @field)(required = true) updatedAt: DateTime)
+ @(ApiModelProperty @field)(required = true) updatedAt: DateTime,
+ @(ApiModelProperty @field)(required = true) inventories: DateTime)

@@ -1,6 +1,6 @@
 package contexts
 
-import models.{Order, Component, Supplier}
+import models.{Component, Order, Supplier}
 import org.joda.time.DateTime
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import roles.{OrderReceivedSupplier, OrderedComponent}
@@ -16,10 +16,10 @@ class CreateOrderContext private
  orderedDate: DateTime)(implicit s: AsyncDBSession) {
 
   private def create(): Future[Order] = {
-    val orderedcomponent = new Component(component) with OrderedComponent
+    val orderedComponent = new Component(component) with OrderedComponent
     val orderReceivedSupplier = new Supplier(supplier) with OrderReceivedSupplier
 
-    orderReceivedSupplier.receiveOrder(orderedcomponent, quantity, orderedDate)
+    orderReceivedSupplier.receiveOrder(orderedComponent, quantity, orderedDate)
   }
 
 }

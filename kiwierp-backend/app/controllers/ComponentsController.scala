@@ -2,9 +2,9 @@ package controllers
 
 import com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException
 import com.wordnik.swagger.annotations._
-import contexts.{ClassifyComponentContext, CreateComponentContext, DeleteComponentContext}
-import jsons.ComponentJson
-import models.Component
+import contexts._
+import jsons.{ComponentInventoryJson, ComponentJson}
+import models.{Component, ComponentInventory}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
@@ -29,11 +29,22 @@ case class ComponentClassificationBody
  @(ApiModelProperty @field)(required = false) inventoryId: Option[Long],
  @(ApiModelProperty @field)(required = false) inventoryDescription: Option[String])
 
+case class ComponentInventoryCreationBody
+(@(ApiModelProperty@field)(required = false) description: Option[String],
+ @(ApiModelProperty@field)(required = true) quantity: Int)
+
+case class ComponentInventoryUpdateBody
+(@(ApiModelProperty@field)(required = false) description: Option[String],
+ @(ApiModelProperty@field)(required = true) quantity: Int)
+
 @Api(
   value = "/inventory-management/components",
   description = "CRUD and list (search) API of components"
 )
-object ComponentsController extends KiwiERPController with ComponentJson {
+object ComponentsController
+  extends KiwiERPController
+  with ComponentJson
+  with ComponentInventoryJson {
 
   @ApiOperation(
     nickname = "listComponent",
@@ -210,7 +221,7 @@ object ComponentsController extends KiwiERPController with ComponentJson {
     nickname = "classifyComponent",
     value = "Classify Component into inventory",
     notes = "Require either inventoryId or inventoryDescription on the request parameters.",
-    response = classOf[models.apidocs.Inventory],
+    response = classOf[models.apidocs.ComponentInventory],
     httpMethod = "POST"
   )
   @ApiImplicitParams(
@@ -255,6 +266,201 @@ object ComponentsController extends KiwiERPController with ComponentJson {
       },
       invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
     )
+  }
+
+  @ApiOperation(
+    nickname = "listComponentInventory",
+    value = "find inventories of Component by Component id",
+    notes = "",
+    response = classOf[models.apidocs.ComponentInventories],
+    httpMethod = "GET"
+  )
+  @ApiImplicitParams(
+    Array(
+      new ApiImplicitParam(
+        name = "id",
+        value = "Component id",
+        required = true,
+        paramType = "path",
+        dataType = "Long"
+      ),
+      new ApiImplicitParam(
+        name = "page",
+        value = "Page Number",
+        required = false,
+        paramType = "query",
+        dataType = "Int"
+      )
+    )
+  )
+  def listInventories(id: Long) = AuthorizedAction.async { implicit req =>
+    Component.find(id) flatMap { _ =>
+      Page(ComponentInventory.findAllByComponentId(id)) map { results =>
+        val (inventories, page) = results
+        val json = Json.obj(
+          "count" -> inventories.size,
+          "page" -> page,
+          "results" -> Json.toJson(inventories)
+        )
+
+        Ok(json)
+      }
+    }
+  }
+
+  @ApiOperation(
+    nickname = "createComponentInventory",
+    value = "Register inventory of component",
+    notes = "",
+    response = classOf[models.apidocs.ComponentInventory],
+    httpMethod = "POST"
+  )
+  @ApiImplicitParams(
+    Array(
+      new ApiImplicitParam(
+        name = "id",
+        value = "Component id",
+        required = true,
+        paramType = "path",
+        dataType = "Long"
+      ),
+      new ApiImplicitParam(
+        name = "body",
+        value = "Request body",
+        required = true,
+        paramType = "body",
+        dataType = "controllers.ComponentInventoryCreationBody"
+      )
+    )
+  )
+  def createInventory(id: Long) = AuthorizedAction.async(parse.json) { implicit req =>
+    implicit val createReads: Reads[ComponentInventoryCreationBody] = (
+      (__ \ 'description)
+        .readNullable[String](minLength[String](1) keepAnd maxLength[String](500)) and
+      (__ \ 'quantity).read[Int](min[Int](0) keepAnd max[Int](MAX_NUMBER))
+    )(ComponentInventoryCreationBody.apply _)
+
+    req.body.validate[ComponentInventoryCreationBody].fold(
+      valid = { j =>
+        CreateComponentInventoryContext(id, j.description, j.quantity) map { inventory =>
+          CreatedWithLocation(Json.toJson(inventory))
+        }
+      },
+      invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
+    )
+  }
+
+  @ApiOperation(
+    nickname = "readComponentInventory",
+    value = "Find an inventory of component by inventory ID",
+    notes = "",
+    response = classOf[models.apidocs.ComponentInventory],
+    httpMethod = "GET"
+  )
+  @ApiImplicitParams(
+    Array(
+      new ApiImplicitParam(
+        name = "id",
+        value = "Component id",
+        required = true,
+        paramType = "path",
+        dataType = "Long"
+      ),
+      new ApiImplicitParam(
+        name = "inventoryId",
+        value = "Component inventory id",
+        required = true,
+        paramType = "path",
+        dataType = "Long"
+      )
+    )
+  )
+  def readInventory(id: Long, inventoryId: Long) = AuthorizedAction.async {
+    Component.find(id) flatMap { _ =>
+      ReadComponentInventoryContext(id, inventoryId) map { inventory =>
+        Ok(Json.toJson(inventory))
+      }
+    }
+  }
+
+  @ApiOperation(
+    nickname = "updateComponentInventory",
+    value = "Edit inventory of component",
+    notes = "",
+    response = classOf[Void],
+    httpMethod = "PATCH"
+  )
+  @ApiImplicitParams(
+    Array(
+      new ApiImplicitParam(
+        name = "id",
+        value = "Component id",
+        required = true,
+        paramType = "path",
+        dataType = "Long"
+      ),
+      new ApiImplicitParam(
+        name = "inventoryId",
+        value = "Component inventory id",
+        required = true,
+        paramType = "path",
+        dataType = "Long"
+      ),
+      new ApiImplicitParam(
+        name = "body",
+        value = "Request body",
+        required = true,
+        paramType = "body",
+        dataType = "controllers.ComponentInventoryUpdateBody"
+      )
+    )
+  )
+  def updateInventory(id: Long, inventoryId: Long) =
+    AuthorizedAction.async(parse.json) {implicit req =>
+      implicit val updateReads: Reads[ComponentInventoryUpdateBody] = (
+        (__ \ 'description)
+          .readNullable[String](minLength[String](1) keepAnd maxLength[String](500)) and
+        (__ \ 'quantity).read[Int](min[Int](0) keepAnd max[Int](MAX_NUMBER))
+      )(ComponentInventoryUpdateBody.apply _)
+
+      req.body.validate[ComponentInventoryUpdateBody].fold(
+        valid = { j =>
+          UpdateComponentInventoryContext(id, inventoryId, j.description, j.quantity) map { _ =>
+            NoContent
+          }
+        },
+        invalid = ef => KiwiERPError.futureResult(new InvalidRequest)
+      )
+    }
+
+  @ApiOperation(
+    nickname = "deleteComponentInventory",
+    value = "Remove inventory of component",
+    notes = "",
+    response = classOf[Void],
+    httpMethod = "DELETE",
+    consumes = "text/plain"
+  )
+  @ApiImplicitParams(
+    Array(
+      new ApiImplicitParam(
+        name = "id",
+        value = "Component id",
+        required = true,
+        paramType = "path",
+        dataType = "Long"
+      ),
+      new ApiImplicitParam(
+        name = "inventoryId",
+        value = "Component inventory id",
+        required = true,
+        paramType = "path",
+        dataType = "Long"
+      )
+    )
+  )
+  def deleteInventory(id: Long, inventoryId: Long) = AuthorizedAction.async {
+    DeleteComponentInventoryContext(id, inventoryId) map (_ => NoContent)
   }
 
 }

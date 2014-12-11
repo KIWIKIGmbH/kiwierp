@@ -63,7 +63,21 @@ CREATE TABLE components (
     ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
-CREATE TABLE inventories (
+CREATE TABLE product_inventories (
+  id serial PRIMARY KEY,
+  product_id integer NOT NULL,
+  description character varying (512),
+  status character varying (64) NOT NULL,
+  quantity integer NOT NULL,
+  created_at timestamp with time zone NOT NULL,
+  updated_at timestamp with time zone NOT NULL,
+  deleted_at timestamp with time zone,
+  FOREIGN KEY (product_id)
+  REFERENCES products (id) MATCH SIMPLE
+  ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+CREATE TABLE component_inventories (
   id serial PRIMARY KEY,
   component_id integer NOT NULL,
   description character varying (512),
@@ -121,6 +135,11 @@ INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_
 INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'guest'::user_type), 'GET', '/inventory-management/products/:id', now(), now());
 INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'PATCH', '/inventory-management/products/:id', now(), now());
 INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'DELETE', '/inventory-management/products/:id', now(), now());
+INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'guest'::user_type), 'GET', '/inventory-management/products/:id/inventories', now(), now());
+INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'POST', '/inventory-management/products/:id/inventories', now(), now());
+INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'guest'::user_type), 'GET', '/inventory-management/products/:id/inventories/:id', now(), now());
+INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'PATCH', '/inventory-management/products/:id/inventories/:id', now(), now());
+INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'DELETE', '/inventory-management/products/:id/inventories/:id', now(), now());
 
 INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'guest'::user_type), 'GET', '/inventory-management/components', now(), now());
 INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'POST', '/inventory-management/components', now(), now());
@@ -128,18 +147,17 @@ INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_
 INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'PATCH', '/inventory-management/components/:id', now(), now());
 INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'DELETE', '/inventory-management/components/:id', now(), now());
 INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'POST', '/inventory-management/components/:id/classification', now(), now());
+INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'guest'::user_type), 'GET', '/inventory-management/components/:id/inventories', now(), now());
+INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'POST', '/inventory-management/components/:id/inventories', now(), now());
+INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'guest'::user_type), 'GET', '/inventory-management/components/:id/inventories/:id', now(), now());
+INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'PATCH', '/inventory-management/components/:id/inventories/:id', now(), now());
+INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'DELETE', '/inventory-management/components/:id/inventories/:id', now(), now());
 
 INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'guest'::user_type), 'GET', '/inventory-management/suppliers', now(), now());
 INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'POST', '/inventory-management/suppliers', now(), now());
 INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'guest'::user_type), 'GET', '/inventory-management/suppliers/:id', now(), now());
 INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'PATCH', '/inventory-management/suppliers/:id', now(), now());
 INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'DELETE', '/inventory-management/suppliers/:id', now(), now());
-
-INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'guest'::user_type), 'GET', '/inventory-management/inventories', now(), now());
-INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'POST', '/inventory-management/inventories', now(), now());
-INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'guest'::user_type), 'GET', '/inventory-management/inventories/:id', now(), now());
-INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'PATCH', '/inventory-management/inventories/:id', now(), now());
-INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'DELETE', '/inventory-management/inventories/:id', now(), now());
 
 INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'guest'::user_type), 'GET', '/inventory-management/orders', now(), now());
 INSERT INTO user_scopes (permitted_user_types, method, uri, created_at, updated_at) VALUES (enum_range('admin'::user_type, 'user'::user_type), 'POST', '/inventory-management/orders', now(), now());

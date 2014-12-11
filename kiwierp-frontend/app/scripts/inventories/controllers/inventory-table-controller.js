@@ -21,7 +21,7 @@ angular.module('inventory.controllers')
         $scope.isAddInventoryForm = false;
 
         $scope.editInventory = function () {
-          inventoryService.edit($scope.inventoryFormInputs)
+          inventoryService.edit($scope.component.id, $scope.inventoryFormInputs)
             .then(function () {
               $scope.reloadProduct();
               modalInstance.close();
@@ -36,7 +36,7 @@ angular.module('inventory.controllers')
           $scope.removeAlertMessage = 'Are you sure to remove the inventory?';
 
           $scope.removeAlertFunc = function () {
-            inventoryService.remove($scope.inventoryFormInputs.id)
+            inventoryService.remove($scope.component.id, $scope.inventoryFormInputs.id)
               .then(function () {
                 $scope.reloadProduct();
                 removeAlertInstance.close();

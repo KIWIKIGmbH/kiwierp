@@ -1,6 +1,6 @@
 package roles
 
-import models.{Inventory, Component}
+import models.{Component, ComponentInventory}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scalikejdbc.async.AsyncDBSession
 import utils.exceptions.InvalidRequest
@@ -14,7 +14,7 @@ trait ClassifiedComponent {
   def checkUnclassifiedQuantity(classifiedQuantity: Int) =
     if (classifiedQuantity > unclassifiedQuantity) throw new InvalidRequest
 
-  def classified(quantityAddedInventory: Inventory with QuantityAddedInventory,
+  def classified(quantityAddedInventory: ComponentInventory with QuantityAddedComponentInventory,
                  classifiedQuantity: Int)(implicit s: AsyncDBSession): Future[Int] =
     classified(classifiedQuantity) flatMap { _ =>
       quantityAddedInventory.store(classifiedQuantity)
@@ -22,9 +22,9 @@ trait ClassifiedComponent {
 
   def classifiedAndAddInventory(classifiedQuantity: Int,
                                 inventoryDescription: Option[String])
-                               (implicit s: AsyncDBSession): Future[Inventory] =
+                               (implicit s: AsyncDBSession): Future[ComponentInventory] =
     classified(classifiedQuantity) flatMap { _ =>
-      Inventory.create(id, inventoryDescription, classifiedQuantity)
+      ComponentInventory.create(id, inventoryDescription, classifiedQuantity)
     }
 
   private def classified(classifiedQuantity: Int)(implicit s: AsyncDBSession): Future[Int] =

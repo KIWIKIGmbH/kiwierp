@@ -1,6 +1,6 @@
 package roles
 
-import models.{Order, Component, Supplier}
+import models.{Component, Order, Supplier}
 import org.joda.time.DateTime
 import scalikejdbc.async.AsyncDBSession
 

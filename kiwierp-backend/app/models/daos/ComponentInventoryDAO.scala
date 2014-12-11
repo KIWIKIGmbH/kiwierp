@@ -1,6 +1,6 @@
 package models.daos
 
-import models.{Inventory, Component}
+import models.{Component, ComponentInventory}
 import org.joda.time.DateTime
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scalikejdbc._
@@ -8,9 +8,9 @@ import scalikejdbc.async._
 
 import scala.concurrent.Future
 
-trait InventoryDAO extends KiwiERPDAO[Inventory] {
+trait ComponentInventoryDAO extends KiwiERPDAO[ComponentInventory] {
 
-  override val tableName = "inventories"
+  override val tableName = "component_inventories"
 
   override val columnNames = Seq(
     "id",
@@ -22,8 +22,8 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
     "deleted_at"
   )
 
-  def apply(i: ResultName[Inventory])(rs: WRS): Inventory =
-    Inventory(
+  def apply(i: ResultName[ComponentInventory])(rs: WRS): ComponentInventory =
+    ComponentInventory(
       rs.long(i.id),
       rs.long(i.componentId),
       rs.stringOpt(i.description),
@@ -33,7 +33,7 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
       rs.jodaDateTimeOpt(i.deletedAt)
     )
 
-  def apply(i: SyntaxProvider[Inventory], co: SyntaxProvider[Component])(rs: WRS): Inventory =
+  def apply(i: SyntaxProvider[ComponentInventory], co: SyntaxProvider[Component])(rs: WRS): ComponentInventory =
     apply(i)(rs).copy(component = Component.opt(co)(rs))
 
   lazy val s = syntax("i")
@@ -44,8 +44,8 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
 
   def findAllByComponentId(componentId: Long)
                           (page: Int = DEFAULT_PAGE)
-                          (implicit s: ADS = AsyncDB.sharedSession): Future[List[Inventory]] = withSQL {
-    selectFrom(Inventory as i)
+                          (implicit s: ADS = AsyncDB.sharedSession): Future[List[ComponentInventory]] = withSQL {
+    selectFrom(ComponentInventory as i)
       .where.eq(i.componentId, componentId)
       .and.append(isNotDeleted)
       .orderBy(i.id)
@@ -55,12 +55,12 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
 
   def create(componentId: Long,
              description: Option[String],
-             quantity: Int)(implicit s: ADS = AsyncDB.sharedSession): Future[Inventory] = {
+             quantity: Int)(implicit s: ADS = AsyncDB.sharedSession): Future[ComponentInventory] = {
     val createdAt = DateTime.now
     val updatedAt = createdAt
 
     updateFutureAndReturnGeneratedKey {
-      insertInto(Inventory)
+      insertInto(ComponentInventory)
         .namedValues(
           column.componentId -> componentId,
           column.description -> description,
@@ -70,13 +70,13 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
         )
         .returningId
     } map { id =>
-      Inventory(id, componentId, description, quantity, createdAt, updatedAt)
+      ComponentInventory(id, componentId, description, quantity, createdAt, updatedAt)
     }
   }
 
   def findWithComponent(id: Long, componentId: Long)
-                       (implicit s: ADS = AsyncDB.sharedSession): Future[Inventory] = withSQL {
-    selectFrom[Inventory](Inventory as i)
+                       (implicit s: ADS = AsyncDB.sharedSession): Future[ComponentInventory] = withSQL {
+    selectFrom[ComponentInventory](ComponentInventory as i)
       .innerJoin(Component as co).on(
         sqls
           .eq(i.componentId, co.id)
@@ -89,7 +89,7 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
   def save(id: Long)
           (description: Option[String], quantity: Int)
           (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFutureOrNotFound {
-    update(Inventory)
+    update(ComponentInventory)
       .set(
         column.description -> description,
         column.quantity -> quantity,
@@ -102,7 +102,7 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
   def updateQuantity(id: Long)
                     (quantity: Int)
                     (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
-    update(Inventory)
+    update(ComponentInventory)
       .set(
         column.quantity -> quantity
       )
@@ -112,7 +112,7 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
 
   def destroyAllByComponentId(componentId: Long, deletedAt: DateTime = DateTime.now)
                          (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
-    update(Inventory)
+    update(ComponentInventory)
       .set(
         column.deletedAt -> deletedAt
       )
@@ -122,7 +122,7 @@ trait InventoryDAO extends KiwiERPDAO[Inventory] {
 
   def destroyAllByComponentIds(componentIds: Seq[Long], deletedAt: DateTime = DateTime.now)
                               (implicit s: ADS = AsyncDB.sharedSession): Future[Int] = updateFuture {
-    update(Inventory)
+    update(ComponentInventory)
       .set(
         column.deletedAt -> deletedAt
       )

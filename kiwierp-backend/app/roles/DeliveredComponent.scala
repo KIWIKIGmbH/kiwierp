@@ -1,6 +1,6 @@
 package roles
 
-import models.{Order, Component}
+import models.{Component, Order}
 import scalikejdbc.async.AsyncDBSession
 
 import scala.concurrent.Future

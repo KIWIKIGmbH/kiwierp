@@ -1,6 +1,6 @@
 package models.daos
 
-import models.{Inventory, Component}
+import models.{Component, ComponentInventory}
 import org.joda.time.DateTime
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scalikejdbc._
@@ -41,7 +41,7 @@ trait ComponentDAO extends KiwiERPDAO[Component] {
 
   val co = s
 
-  private val i = Inventory.i
+  private val i = ComponentInventory.i
 
   def create(productId: Long,
              name: String,

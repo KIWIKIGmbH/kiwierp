@@ -25,7 +25,7 @@ class DeleteProductContext private
 object DeleteProductContext {
 
   def apply(id: Long): Future[Int] = AsyncDB localTx { implicit tx =>
-    Product.findWithComponents(id) flatMap { product =>
+    Product.findWithProductInventoriesAndComponents(id) flatMap { product =>
       val cxt = new DeleteProductContext(product)
 
       cxt.delete()

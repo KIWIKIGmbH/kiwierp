@@ -1,9 +1,9 @@
 package models
 
-import models.daos.InventoryDAO
+import models.daos.ComponentInventoryDAO
 import org.joda.time.DateTime
 
-case class Inventory
+case class ComponentInventory
 (id: Long,
  componentId: Long,
  description: Option[String],
@@ -13,7 +13,7 @@ case class Inventory
  deletedAt: Option[DateTime] = None,
  component: Option[Component] = None) {
 
-  def this(inventory: Inventory) = this(
+  def this(inventory: ComponentInventory) = this(
     inventory.id,
     inventory.componentId,
     inventory.description,
@@ -26,4 +26,4 @@ case class Inventory
 
 }
 
-object Inventory extends InventoryDAO
+object ComponentInventory extends ComponentInventoryDAO

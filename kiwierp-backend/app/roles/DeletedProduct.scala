@@ -1,6 +1,6 @@
 package roles
 
-import models.{Inventory, Component, Product}
+import models.{Component, ComponentInventory, Product, ProductInventory}
 import org.joda.time.DateTime
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scalikejdbc.async.AsyncDBSession
@@ -11,11 +11,21 @@ trait DeletedProduct {
 
   this: Product =>
 
+  def deleteInventories(deletedAt: DateTime)(implicit s: AsyncDBSession): Future[Int] = {
+    val inventoryIds = inventories.map(_.id)
+
+    if (inventoryIds.nonEmpty) {
+      ProductInventory.destroyAllByProductId(id, deletedAt)
+    } else {
+      Future.successful(1)
+    }
+  }
+
   def deleteComponents(deletedAt: DateTime)(implicit s: AsyncDBSession): Future[Int] = {
     val componentIds = components.map(_.id)
 
     if (componentIds.nonEmpty) {
-      Inventory.destroyAllByComponentIds(components.map(_.id), deletedAt) flatMap { _ =>
+      ComponentInventory.destroyAllByComponentIds(components.map(_.id), deletedAt) flatMap { _ =>
         Component.destroyAllByProductId(id, deletedAt)
       }
     } else {

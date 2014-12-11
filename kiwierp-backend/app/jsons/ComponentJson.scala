@@ -3,7 +3,7 @@ package jsons
 import models.Component
 import play.api.libs.json.{JsValue, Json, Writes}
 
-trait ComponentJson extends KiwiERPJson with InventoryJson with OrderJson {
+trait ComponentJson extends KiwiERPJson with ComponentInventoryJson with OrderJson {
 
   implicit val componentWrites = new Writes[Component] {
     def writes(component: Component): JsValue = Json.obj(

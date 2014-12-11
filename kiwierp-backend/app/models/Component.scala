@@ -13,7 +13,7 @@ case class Component
  createdAt: DateTime,
  updatedAt: DateTime,
  deletedAt: Option[DateTime] = None,
- inventories: Seq[Inventory] = Nil,
+ inventories: Seq[ComponentInventory] = Nil,
  orders: Seq[Order] = Nil) {
 
   def this(component: Component) = this(

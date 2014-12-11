@@ -1,8 +1,8 @@
 package contexts
 
-import models.{Inventory, Component}
+import models.{Component, ComponentInventory}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import roles.{ClassifiedComponent, QuantityAddedInventory}
+import roles.{ClassifiedComponent, QuantityAddedComponentInventory}
 import scalikejdbc.async.{AsyncDB, AsyncDBSession}
 
 import scala.concurrent.Future
@@ -15,13 +15,13 @@ class ClassifyComponentContext private
 
   classifiedComponent.checkUnclassifiedQuantity(classifiedQuantity)
 
-  private def classify(inventory: Inventory): Future[Int] = {
-    val quantityAddedInventory = new Inventory(inventory) with QuantityAddedInventory
+  private def classify(inventory: ComponentInventory): Future[Int] = {
+    val quantityAddedInventory = new ComponentInventory(inventory) with QuantityAddedComponentInventory
 
     classifiedComponent.classified(quantityAddedInventory, classifiedQuantity)
   }
 
-  private def classifyAndCreateInventory(inventoryDescription: Option[String]): Future[Inventory] =
+  private def classifyAndCreateInventory(inventoryDescription: Option[String]): Future[ComponentInventory] =
     classifiedComponent.classifiedAndAddInventory(classifiedQuantity, inventoryDescription)
 
 }
@@ -30,7 +30,7 @@ object ClassifyComponentContext extends KiwiERPContext {
 
   def apply(id: Long, classifiedQuantity: Int, inventoryId: Long): Future[Int] =
     AsyncDB localTx { implicit tx =>
-      Inventory.findWithComponent(inventoryId, id) flatMap { inventory =>
+      ComponentInventory.findWithComponent(inventoryId, id) flatMap { inventory =>
         val component = inventory.component.get
         val cxt = new ClassifyComponentContext(component, classifiedQuantity)
 
@@ -40,7 +40,7 @@ object ClassifyComponentContext extends KiwiERPContext {
 
   def apply(id: Long,
             classifiedQuantity: Int,
-            inventoryDescription: Option[String]): Future[Inventory] =
+            inventoryDescription: Option[String]): Future[ComponentInventory] =
     AsyncDB localTx { implicit tx =>
       Component.find(id) flatMap { Component =>
         val cxt = new ClassifyComponentContext(Component, classifiedQuantity)

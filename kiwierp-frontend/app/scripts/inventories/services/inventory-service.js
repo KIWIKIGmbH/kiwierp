@@ -3,7 +3,8 @@
 angular.module('inventory.services')
   .factory('inventoryService', ['apiService',
     function (apiService) {
-      var baseResource = '/inventory-management/inventories';
+      var baseResource = '/inventory-management/components/';
+      var subResource = '/inventories';
 
       return {
         add: function (inventory) {
@@ -13,11 +14,11 @@ angular.module('inventory.services')
             quantity: inventory.quantity
           };
 
-          return apiService.post(baseResource, data);
+          return apiService.post(baseResource + inventory.componentId + subResource, data);
         },
 
-        edit: function (inventory) {
-          var resource = baseResource + '/' + inventory.id;
+        edit: function (componentId, inventory) {
+          var resource = baseResource + componentId + subResource + '/' + inventory.id;
           var data = {
             description: inventory.description,
             quantity: inventory.quantity
@@ -26,8 +27,8 @@ angular.module('inventory.services')
           return apiService.patch(resource, data);
         },
 
-        remove: function (id) {
-          var resource = baseResource + '/' + id;
+        remove: function (componentId, id) {
+          var resource = baseResource + componentId + subResource + '/' + id;
 
           return apiService.delete(resource);
         }

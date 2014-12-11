@@ -1,6 +1,6 @@
 package models.daos
 
-import models.{Order, Component}
+import models.{Component, Order}
 import org.joda.time.DateTime
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scalikejdbc._
