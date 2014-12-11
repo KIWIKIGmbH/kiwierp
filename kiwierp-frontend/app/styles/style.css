@@ -153,6 +153,17 @@ body {
   color: #FFF;
 }
 
+.btn-add-product-inventory {
+  border: 1px solid #7F8B95;
+  background: #2a3d4f;
+  color: #FFF;
+}
+
+.btn-add-product-inventory:hover {
+  border-color: #FFF;
+  color: #FFF;
+}
+
 .body-heading {
   display: table;
   width: 100%;

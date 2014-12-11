@@ -9,7 +9,6 @@ angular.module('inventory.services')
       return {
         add: function (inventory) {
           var data = {
-            componentId: inventory.componentId,
             description: inventory.description,
             quantity: inventory.quantity
           };

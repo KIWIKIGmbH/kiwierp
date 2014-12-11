@@ -1,12 +1,82 @@
 <div id="wrapper">
   <div data-ke-navbar></div>
   <div id="page-wrapper">
-    <div class="row">
-      <div class="col-lg-12">
-        <h1 class="page-header">Inventory</h1>
+    <div class="row col-lg-12">
+      <div class="page-header">
+        <div class="page-header__body">
+          <p class="page-header__group">Inventory : All</p>
+          <h1 class="page-header__title">Inventory Level of Products</h1>
+        </div>
       </div>
-      <div class="col-lg-4">
-        <p class="lead">TODO</p>
+      <div class="panel panel-default" data-ng-repeat="product in products">
+        <div class="panel-heading">
+          <h2>{{ product.name }}</h2>
+          <div class="panel-heading__btn">
+            <a type="button" class="btn btn-add-product-inventory" data-ng-click="openAddInventoryForm(product)"><i class="fa fa-plus fa-fw"></i>Add Inventory</a>
+          </div>
+        </div>
+        <!-- .panel-heading -->
+        <div class="panel-body">
+          <p class="panel-heading-lead">{{ product.description }}</p>
+          <div data-ng-repeat="productInventory in product.modifiedInventories">
+            <div class="body-heading body-inventories">
+              <h3>{{ productInventory.name }}</h3>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Quantity</th>
+                  <th>Description</th>
+                  <th class="edit_column"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr data-ng-repeat="inventory in productInventory.inventories">
+                  <td>{{ $index + 1 }}</td>
+                  <td>{{ inventory.quantity }}</td>
+                  <td>{{ inventory.description }}</td>
+                  <td class="edit_cell">
+                    <a href data-ng-click="openEditInventoryForm(product.id, inventory)"><i class="fa fa-pencil fa-fw"></i> Edit</a>
+                  </td>
+                </tr>
+                <tr class="last_row">
+                  <td>Partial Sum</td>
+                  <td>{{ totalQuantity(productInventory.inventories) }}</td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- /.table-responsive -->
+          </div>
+          <div class="body-heading body-inventories">
+            <h3>All the inventories of {{ product.name }}</h3>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+              <tr>
+                <th>#</th>
+                <th>Quantity</th>
+                <th></th>
+                <th class="edit_column"></th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr class="last_row">
+                <td>Sum</td>
+                <td>{{ totalQuantity(product.inventories) }}</td>
+                <td></td>
+                <td></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- /.table-responsive -->
+        </div>
       </div>
     </div>
   </div>

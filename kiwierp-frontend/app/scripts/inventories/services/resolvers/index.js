@@ -2,15 +2,21 @@
 
 angular.module('inventory.services')
   .provider('index', {
-    checkAuthorized: ['index',
+    index: ['index',
       function (index) {
         return index();
       }],
 
-    $get: ['authorizationService',
-      function (authorizationService) {
+    $get: ['authorizationService', 'productService',
+      function (authorizationService, productService) {
         return function () {
-          return authorizationService.authorize();
+          return authorizationService.authorize()
+            .then(function () {
+              return productService.search();
+            })
+            .then(function (data) {
+              return data.results;
+            });
         };
       }]
   });

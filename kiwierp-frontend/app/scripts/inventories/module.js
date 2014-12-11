@@ -18,7 +18,7 @@ angular.module('inventory', [
           templateUrl: '/views/inventories/index.html',
           controller: 'InventoryIndexCtrl',
           resolve: {
-            checkAuthorized: indexProvider.checkAuthorized
+            products: indexProvider.index
           }
         })
         .when('/inventories/suppliers', {
